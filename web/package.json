@@ -1,0 +1,20 @@
+{
+  "name": "wukui-amr-island",
+  "version": "1.0.0",
+  "description": "彰化大村武魁祠 × AMR 智慧導覽島嶼 3D 互動探索 (UC01~UC12)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "Three.js",
+    "AMR",
+    "Autonomous Mobile Robot",
+    "Dacun Wukui Ancestral Hall",
+    "Heritage",
+    "Use Cases"
+  ],
+  "author": "AMR Project Team",
+  "license": "ISC"
+}
+

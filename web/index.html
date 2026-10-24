@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>彰化大村武魁祠 × AMR 智慧導覽島嶼 | 12獨立用例 3D 互動探索</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Three.js and OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- Tween.js for ultra-smooth cinematic camera & AMR movement -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+</head>
+<body>
+
+  <!-- 3D WebGL Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- 3D Hover Tooltip -->
+  <div id="tooltip-3d" class="tooltip-3d"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <div class="brand-card">
+      <div class="brand-icon">🏛️</div>
+      <div class="brand-titles">
+        <h1>
+          大村武魁祠 × AMR 智慧導覽島嶼
+          <span class="badge-heritage">彰化縣定古蹟</span>
+        </h1>
+        <p>12 個獨立用例 (UC01 ~ UC12) 3D 浮島探索 | 區域性自主移動機器人</p>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button id="btn-tour" class="btn-pill primary" title="依序自動巡航展示 UC01 到 UC12">
+        <span>🎬</span>
+        <span id="tour-btn-text">啟動巡航導覽</span>
+      </button>
+      <button id="btn-reset-cam" class="btn-pill" title="重設為 3D 全景鳥瞰視角">
+        <span>🔄</span> 全景視角
+      </button>
+      <button id="btn-robot-cam" class="btn-pill" title="切換至導覽機器人視角">
+        <span>🤖</span> 機器人視角
+      </button>
+      <button id="btn-info" class="btn-pill" title="查看武魁祠文史背景與系統規格">
+        <span>ℹ️</span> 關於武魁祠
+      </button>
+    </div>
+  </header>
+
+  <!-- Guided Tour Floating Status HUD -->
+  <div id="tour-hud" class="tour-hud">
+    <div class="tour-pulse-dot"></div>
+    <span id="tour-status-text">巡航導覽模式進行中：正在引導至 UC01 偵測訪客</span>
+    <button id="btn-stop-tour" class="btn-pill" style="padding: 4px 10px; font-size: 0.75rem;">停止巡航</button>
+  </div>
+
+  <!-- Bottom Floating 12 Independent UC Dock -->
+  <nav class="bottom-dock">
+    <div class="dock-header">
+      <div class="dock-title">
+        <span>📍</span>
+        <span>12 個獨立用例節點 (點選地標 / 浮島即時聚焦)</span>
+      </div>
+      <div class="dock-hint">支援滑鼠 360° 拖曳旋轉、滾輪縮放視角</div>
+    </div>
+    <div id="dock-items" class="dock-items-wrapper">
+      <!-- UC01 ~ UC12 buttons will be dynamically populated here -->
+    </div>
+  </nav>
+
+  <!-- Slide-out Side Drawer for UC Details -->
+  <aside id="uc-drawer" class="uc-drawer">
+    <div class="drawer-header">
+      <button id="drawer-close-btn" class="drawer-close" title="關閉面板">✕</button>
+      <div class="drawer-category-tag" id="drawer-category">門口迎賓感知</div>
+      <div class="drawer-uc-id" id="drawer-id">UC01</div>
+      <h2 class="drawer-uc-title" id="drawer-title">偵測訪客</h2>
+      <div class="drawer-uc-title-en" id="drawer-title-en">Detect Visitor</div>
+    </div>
+
+    <div class="drawer-content">
+      <!-- 武魁祠實際地理場域 -->
+      <div class="drawer-section">
+        <div class="section-label">📍 古蹟配置位置</div>
+        <div class="location-box">
+          <div class="loc-title" id="drawer-loc-name">武魁祠外門 / 貢旗巷口迎賓區</div>
+          <div class="loc-desc" id="drawer-loc-desc">武魁祠外圍入口處，訪客由大村鄉貢旗一巷進入古蹟園區之第一道感測邊界。</div>
+        </div>
+      </div>
+
+      <!-- 參與角色 -->
+      <div class="drawer-section">
+        <div class="section-label">👥 參與者 (Actors)</div>
+        <div class="actors-grid" id="drawer-actors">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- 前置與後置條件 -->
+      <div class="drawer-section">
+        <div class="section-label">📋 前置條件 (Preconditions)</div>
+        <ul class="conditions-list" id="drawer-preconds">
+          <!-- Injected via JavaScript -->
+        </ul>
+      </div>
+
+      <!-- 主要事件流 -->
+      <div class="drawer-section">
+        <div class="section-label">⚡ 主要事件流 (Event Flow)</div>
+        <div class="event-flow-steps" id="drawer-event-flow">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- UML 循序步驟即時視覺化 -->
+      <div class="drawer-section">
+        <div class="section-label">🔄 UML 循序圖時序模擬 (Sequence Flow)</div>
+        <div class="seq-box" id="drawer-seq-box">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+
+      <!-- 後置條件 -->
+      <div class="drawer-section">
+        <div class="section-label">🏁 後置條件 (Postconditions)</div>
+        <ul class="conditions-list" id="drawer-postconds">
+          <!-- Injected via JavaScript -->
+        </ul>
+      </div>
+
+      <!-- 技術範疇 -->
+      <div class="drawer-section">
+        <div class="section-label">🛠️ 相關技術棧 (Tech Stack)</div>
+        <div class="tech-tags-wrapper" id="drawer-tech">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Footer Actions -->
+    <div class="drawer-footer">
+      <button id="btn-speak" class="btn-full speak-btn" title="透過在地化語音合成朗讀機器人導覽解說">
+        <span>🔊</span> 語音解說模擬
+      </button>
+      <button id="btn-prev-uc" class="btn-full" title="切換至上一個用例">
+        ◀ 上一個
+      </button>
+      <button id="btn-next-uc" class="btn-full" title="切換至下一個用例">
+        下一個 ▶
+      </button>
+    </div>
+  </aside>
+
+  <!-- Heritage Info Modal -->
+  <div id="info-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>🏛️</span> 彰化縣定古蹟「大村武魁新厝」簡介
+      </div>
+      <div class="modal-body">
+        <p>
+          <strong>大村武魁祠</strong>（又稱武魁新厝、賴登雲故居），座落於彰化縣大村鄉貢旗村貢旗一巷 7 號，為彰化縣定傳統閩南三合院建築古蹟。
+        </p>
+        <p>
+          清咸豐九年（1859年），賴樸園之孫<strong>賴步雲</strong>與<strong>賴登雲</strong>兄弟，於己未恩科與補戊午正科中<strong>同榜考中武舉人</strong>（第54名、第55名），兄弟同科武舉在台灣文史中極為稀罕！
+        </p>
+        <p>
+          兄弟衣錦還鄉後，於宅第山門高懸<strong>「武魁」</strong>匾額，正廳更獲閩浙總督兼福建巡撫慶端題贈<strong>「兄弟同榜」</strong>匾額。當年鄉里立旗祭祖、旌旗蔽天，聚落因而得名<strong>「貢旗村」</strong>。
+        </p>
+        <p>
+          本畢業製作<strong>《區域性自主移動式機器人》</strong>以此文化遺產為實證場域，將 12 項自主導覽用例（UC01 ~ UC12）深度融合於武魁祠山門、前埕、正廳與護龍空間中，實現古蹟文化傳承與現代 AI 機器人技術的完美交匯。
+        </p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+        <button id="btn-close-modal" class="btn-pill primary">了解關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Data and Main 3D Logic -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+

@@ -123,6 +123,19 @@ sequenceDiagram
 
 ---
 
+## 🏛️ 場域實證：彰化縣定古蹟「大村武魁新厝」（武魁祠）
+* **地理位置**：彰化縣大村鄉貢旗村貢旗一巷 7 號（[Google 地圖](https://maps.app.goo.gl/TZW9MKjQZp8vuEh39)）
+* **文史背景**：清咸豐九年（1859年）賴步雲、賴登雲兄弟同榜高中武舉人（第54、55名），獲贈「武魁」與「兄弟同榜」匾，立旗祭祖得名「貢旗村」。
+
+---
+
+## 🌐 3D 互動浮島網頁 (Heart Island Style)
+* 參考沈伯洋 **「HEART 政策島」(https://puma.taipei/heart-island)** 設計理念。
+* **12 個獨立用例 (UC01 ~ UC12)**：每個用例皆為獨立 3D 浮島節點，支援平滑鏡頭特寫、AMR 自主尋路與側邊抽屜式完整規格。
+* **一鍵啟動**：在專案根目錄雙擊 [start-web.bat](file:///d:/大學/畢業製作/區域性自主移動式機器人/agent/start-web.bat) 即可於瀏覽器體驗。
+
+---
+
 ## 📂 文件清單 (Repository Structure)
 
 * [README.md](file:///home/stronger/Projects/mobile-multimedia-guide/README.md)：專案總覽、系統架構及流程規格說明。
