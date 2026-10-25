@@ -136,12 +136,30 @@ sequenceDiagram
 
 ---
 
-## 📂 文件清單 (Repository Structure)
+* **古蹟實景具象化 3D 建模**：
+  * **五開間正身**：中央「凹壽」退縮門廳、三關六扇門、福建巡撫慶端贈「兄弟同榜」立體金匾、雙層硬山燕尾脊。
+  * **懸山軒亭（拜亭）**：四柱福州杉木圓柱與花崗石柱珠、懸山馬背頂。
+  * **獨立燕尾門樓**：高懸「武魁」黑底金字大匾、兩側綠釉花磚透窗與斗仔砌院牆。
+  * **半月形風水池**：倒映燕尾天際線、弧形石砌駁岸與水生睡蓮。
+  * **賴氏雙舉人旗杆座**：雙層花崗石夾柱、旗杆斗與咸豐九年武舉人旌旗。
+  * **大村巨峰葡萄藤架**：彰化大村「葡萄之鄉」在地農業景觀與綠能自主充電基座。
 
-* [README.md](file:///home/stronger/Projects/mobile-multimedia-guide/README.md)：專案總覽、系統架構及流程規格說明。
-* [UC01-UC04 (Use Case Specifications).md](file:///home/stronger/Projects/mobile-multimedia-guide/UC01-UC04%20(Use%20Case%20Specifications).md)：詳細用例規格書與循序圖定義。
-* [三合院智慧導覽系統：UML 用例圖 (Use Case Diagram).md](file:///home/stronger/Projects/mobile-multimedia-guide/%E4%B8%89%E5%90%88%E9%99%A2%E6%99%BA%E6%85%A7%E5%B0%8E%E8%A6%BD%E7%B3%BB%E7%B5%B1%EF%BC%9AUML%20%E7%94%A8%E4%BE%8B%E5%9C%96%20(Use%20Case%20Diagram).md)：系統參與者邊界與用例圖 Mermaid 原始碼。
-* [gemini-code-UC01-UC04.md](file:///home/stronger/Projects/mobile-multimedia-guide/gemini-code-UC01-UC04.md)：循序圖 Mermaid 代碼備份。
+---
+
+## 📂 文件與系統清單 (Repository Structure)
+
+* [README.md](file:///d:/大學/畢業製作/區域性自主移動式機器人/agent/README.md)：專案總覽、大村武魁祠場域、系統架構及流程規格說明。
+* **[3D 互動浮島網頁系統 (web/)](file:///d:/大學/畢業製作/區域性自主移動式機器人/agent/web/index.html)**：卡坦島 3D 浮島大村武魁祠 AMR 12 個獨立用例互動網頁。
+* [start-web.bat](file:///d:/大學/畢業製作/區域性自主移動式機器人/agent/start-web.bat)：Windows 滑鼠雙擊一鍵在瀏覽器啟動 3D 互動網頁。
+* [UC01-UC04 (Use Case Specifications).md](file:///d:/大學/畢業製作/區域性自主移動式機器人/agent/UC01-UC04%20(Use%20Case%20Specifications).md)：詳細用例規格書與循序圖定義。
+* [UC05-UC07.md](file:///d:/大學/畢業製作/區域性自主移動式機器人/agent/UC05-UC07.md)：庭院導覽、正廳歷史解說、廂房常民文化展示。
+* [UC08-UC10.md](file:///d:/大學/畢業製作/區域性自主移動式機器人/agent/UC08-UC10.md)：多媒體互動問答、導覽結束歡送、系統自動返航充電。
+* [UC11-UC12.md](file:///d:/大學/畢業製作/區域性自主移動式機器人/agent/UC11-UC12.md)：表情辨識主動關懷、手勢辨識請求協助。
+
+
+
+
+
 
 ---
 
