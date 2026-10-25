@@ -28,7 +28,7 @@
           大村武魁祠 × AMR 智慧導覽島嶼
           <span class="badge-heritage">彰化縣定古蹟</span>
         </h1>
-        <p>12 個獨立用例 (UC01 ~ UC12) 3D 浮島探索 | 區域性自主移動機器人</p>
+        <p>12 個獨立用例 (UC01 ~ UC12) 3D 實景探索 | 區域性自主移動機器人</p>
       </div>
     </div>
 
@@ -70,85 +70,145 @@
     </div>
   </nav>
 
-  <!-- Slide-out Side Drawer for UC Details -->
+  <!-- Slide-out Side Drawer for UC Details (清晰分頁與結構化排版) -->
   <aside id="uc-drawer" class="uc-drawer">
+    <!-- 頂部標題與快速語音播放 -->
     <div class="drawer-header">
       <button id="drawer-close-btn" class="drawer-close" title="關閉面板">✕</button>
-      <div class="drawer-category-tag" id="drawer-category">門口迎賓感知</div>
-      <div class="drawer-uc-id" id="drawer-id">UC01</div>
-      <h2 class="drawer-uc-title" id="drawer-title">偵測訪客</h2>
-      <div class="drawer-uc-title-en" id="drawer-title-en">Detect Visitor</div>
+      
+      <div class="drawer-tags-row">
+        <span class="drawer-category-tag" id="drawer-category">門口迎賓感知</span>
+        <span class="drawer-step-badge" id="drawer-counter">1 / 12</span>
+      </div>
+      
+      <div class="drawer-title-group">
+        <div class="drawer-uc-id" id="drawer-id">UC01</div>
+        <div class="drawer-titles-col">
+          <h2 class="drawer-uc-title" id="drawer-title">偵測訪客</h2>
+          <div class="drawer-uc-title-en" id="drawer-title-en">Detect Visitor</div>
+        </div>
+      </div>
+
+      <!-- 整合式語音解說播放卡 -->
+      <div class="drawer-speech-card">
+        <button id="btn-speak" class="btn-speech-play" title="播放在地化語音解說">
+          <span class="play-icon">🔊</span>
+          <span id="speak-btn-text">聆聽機器人解說</span>
+        </button>
+        <div class="audio-wave-bars" id="audio-wave">
+          <span class="wave-bar"></span>
+          <span class="wave-bar"></span>
+          <span class="wave-bar"></span>
+          <span class="wave-bar"></span>
+        </div>
+      </div>
     </div>
 
+    <!-- 抽屜分頁標籤切換按鈕 (清晰分離規格與時序圖) -->
+    <div class="drawer-nav-tabs">
+      <button class="drawer-tab-btn active" data-tab="tab-specs">
+        <span>📋</span> 規格與流程
+      </button>
+      <button class="drawer-tab-btn" data-tab="tab-sequence">
+        <span>🔄</span> UML 循序圖與技術
+      </button>
+    </div>
+
+    <!-- 抽屜內容容器 -->
     <div class="drawer-content">
-      <!-- 武魁祠實際地理場域 -->
-      <div class="drawer-section">
-        <div class="section-label">📍 古蹟配置位置</div>
-        <div class="location-box">
-          <div class="loc-title" id="drawer-loc-name">武魁祠外門 / 貢旗巷口迎賓區</div>
-          <div class="loc-desc" id="drawer-loc-desc">武魁祠外圍入口處，訪客由大村鄉貢旗一巷進入古蹟園區之第一道感測邊界。</div>
+      
+      <!-- 分頁 1: 用例規格與流程 -->
+      <div id="tab-specs" class="tab-pane active">
+        <!-- 武魁祠實際地理場域 -->
+        <div class="drawer-card">
+          <div class="card-header">
+            <span class="icon">📍</span>
+            <span class="title">古蹟配置定位</span>
+          </div>
+          <div class="loc-box">
+            <div class="loc-title" id="drawer-loc-name">武魁祠外門 / 貢旗巷口迎賓區</div>
+            <div class="loc-desc" id="drawer-loc-desc">武魁祠外圍入口處，訪客由大村鄉貢旗一巷進入古蹟園區之第一道感測邊界。</div>
+          </div>
+        </div>
+
+        <!-- 參與角色 -->
+        <div class="drawer-card">
+          <div class="card-header">
+            <span class="icon">👥</span>
+            <span class="title">系統參與者 (Actors)</span>
+          </div>
+          <div class="actors-grid" id="drawer-actors">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+
+        <!-- 主要事件流 (時間軸步驟) -->
+        <div class="drawer-card">
+          <div class="card-header">
+            <span class="icon">⚡</span>
+            <span class="title">主要事件流 (Event Flow)</span>
+          </div>
+          <div class="event-timeline" id="drawer-event-flow">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+
+        <!-- 前置與後置條件對照卡片 -->
+        <div class="drawer-card-dual">
+          <div class="cond-subcard pre">
+            <div class="subcard-title">
+              <span class="dot"></span> 前置條件 (Preconditions)
+            </div>
+            <ul class="cond-list" id="drawer-preconds">
+              <!-- Injected via JavaScript -->
+            </ul>
+          </div>
+
+          <div class="cond-subcard post">
+            <div class="subcard-title">
+              <span class="dot"></span> 後置條件 (Postconditions)
+            </div>
+            <ul class="cond-list" id="drawer-postconds">
+              <!-- Injected via JavaScript -->
+            </ul>
+          </div>
         </div>
       </div>
 
-      <!-- 參與角色 -->
-      <div class="drawer-section">
-        <div class="section-label">👥 參與者 (Actors)</div>
-        <div class="actors-grid" id="drawer-actors">
-          <!-- Injected via JavaScript -->
+      <!-- 分頁 2: UML 循序圖與技術棧 -->
+      <div id="tab-sequence" class="tab-pane">
+        <!-- UML 循序步驟時序模擬 -->
+        <div class="drawer-card">
+          <div class="card-header">
+            <span class="icon">🔄</span>
+            <span class="title">UML 循序訊息時序流 (Sequence Flow)</span>
+          </div>
+          <div class="seq-timeline-box" id="drawer-seq-box">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+
+        <!-- 技術棧範疇 -->
+        <div class="drawer-card">
+          <div class="card-header">
+            <span class="icon">🛠️</span>
+            <span class="title">核心技術棧與感測器 (Tech Stack)</span>
+          </div>
+          <div class="tech-tags-grid" id="drawer-tech">
+            <!-- Injected via JavaScript -->
+          </div>
         </div>
       </div>
 
-      <!-- 前置與後置條件 -->
-      <div class="drawer-section">
-        <div class="section-label">📋 前置條件 (Preconditions)</div>
-        <ul class="conditions-list" id="drawer-preconds">
-          <!-- Injected via JavaScript -->
-        </ul>
-      </div>
-
-      <!-- 主要事件流 -->
-      <div class="drawer-section">
-        <div class="section-label">⚡ 主要事件流 (Event Flow)</div>
-        <div class="event-flow-steps" id="drawer-event-flow">
-          <!-- Injected via JavaScript -->
-        </div>
-      </div>
-
-      <!-- UML 循序步驟即時視覺化 -->
-      <div class="drawer-section">
-        <div class="section-label">🔄 UML 循序圖時序模擬 (Sequence Flow)</div>
-        <div class="seq-box" id="drawer-seq-box">
-          <!-- Injected via JavaScript -->
-        </div>
-      </div>
-
-      <!-- 後置條件 -->
-      <div class="drawer-section">
-        <div class="section-label">🏁 後置條件 (Postconditions)</div>
-        <ul class="conditions-list" id="drawer-postconds">
-          <!-- Injected via JavaScript -->
-        </ul>
-      </div>
-
-      <!-- 技術範疇 -->
-      <div class="drawer-section">
-        <div class="section-label">🛠️ 相關技術棧 (Tech Stack)</div>
-        <div class="tech-tags-wrapper" id="drawer-tech">
-          <!-- Injected via JavaScript -->
-        </div>
-      </div>
     </div>
 
-    <!-- Drawer Footer Actions -->
+    <!-- 底部切換欄 -->
     <div class="drawer-footer">
-      <button id="btn-speak" class="btn-full speak-btn" title="透過在地化語音合成朗讀機器人導覽解說">
-        <span>🔊</span> 語音解說模擬
+      <button id="btn-prev-uc" class="btn-nav" title="切換至上一個用例">
+        <span>◀</span> 上一個用例
       </button>
-      <button id="btn-prev-uc" class="btn-full" title="切換至上一個用例">
-        ◀ 上一個
-      </button>
-      <button id="btn-next-uc" class="btn-full" title="切換至下一個用例">
-        下一個 ▶
+      <button id="btn-next-uc" class="btn-nav primary" title="切換至下一個用例">
+        下一個用例 <span>▶</span>
       </button>
     </div>
   </aside>
@@ -192,4 +252,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-

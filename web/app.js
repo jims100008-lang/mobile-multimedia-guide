@@ -1,13 +1,10 @@
 /**
  * 大村武魁祠 × AMR 智慧導覽島嶼 (Wukui AMR Island)
- * Three.js 3D 核心互動引擎 - 具象化傳統閩南古蹟建築旗艦版
- * 嚴格考究大村武魁新厝（賴登雲故居）：
- * 1. 五開間正身（中央凹壽、三關六扇門、兄弟同榜匾、硬山雙燕尾脊）
- * 2. 獨立木造懸山軒亭（四柱拜亭、斗栱柱珠）
- * 3. 獨立硬山燕尾門樓（武魁匾、綠釉花磚透窗、斗仔砌紅磚院牆）
- * 4. 半月形風水池（石砌駁岸、波光水面、睡蓮步道）
- * 5. 賴氏咸豐九年雙舉人旗杆石座群（石夾柱、朱紅旗杆、武魁旌旗）
- * 6. 大村巨峰葡萄藤架與常民農村景觀
+ * Three.js 3D 核心互動引擎 - 宏偉具象化古蹟架構與精確無遮蔽拓撲
+ * 1. 武魁祠建築主體全面放大 (1.3x 壯闊比例)，居於場景絕對視覺焦點。
+ * 2. 弱化周邊無關樹木，視野純淨通透。
+ * 3. 12 個 UC 節點精準設置於無遮蔽之石板步道、前埕與拜庭外，絕不與建物碰撞重疊。
+ * 4. 側邊抽屜面板支援清晰分頁切換 (規格流程 / 循序圖與技術)、語音等化器動畫與狀態提示。
  */
 
 // 全域狀態
@@ -22,9 +19,9 @@ let isRobotCamActive = false;
 let raycaster, mouse;
 let proceduralTextures = {};
 
-// 視角預設
-const DEFAULT_CAM_POS = { x: 0, y: 54, z: 70 };
-const DEFAULT_LOOK_AT = { x: 0, y: 3, z: 12 };
+// 最佳全景視角 (完整收納宏偉五開間正身、左右護龍、門樓與半月池)
+const DEFAULT_CAM_POS = { x: 0, y: 58, z: 76 };
+const DEFAULT_LOOK_AT = { x: 0, y: 3, z: 10 };
 
 // 初始化
 window.addEventListener("DOMContentLoaded", () => {
@@ -46,16 +43,15 @@ window.addEventListener("DOMContentLoaded", () => {
    1. 程序化高解析古蹟紋理生成 (Procedural PBR Canvas Textures)
    ========================================================================== */
 function initProceduralTextures() {
-  // (1) 閩南傳統斗仔砌紅磚紋理 (Min-Nan Red Brick Texture)
+  // (1) 閩南傳統斗仔砌紅磚紋理
   const brickCanvas = document.createElement("canvas");
   brickCanvas.width = 512;
   brickCanvas.height = 512;
   const bCtx = brickCanvas.getContext("2d");
 
-  bCtx.fillStyle = "#a8321e"; // 暖磚紅基底
+  bCtx.fillStyle = "#a8321e";
   bCtx.fillRect(0, 0, 512, 512);
 
-  // 灰漿灰泥縫隙
   bCtx.strokeStyle = "#e2d9cc";
   bCtx.lineWidth = 4;
 
@@ -81,7 +77,6 @@ function initProceduralTextures() {
     }
   }
 
-  // 磚面隨機噪點與陳舊感
   for (let i = 0; i < 6000; i++) {
     const rx = Math.random() * 512;
     const ry = Math.random() * 512;
@@ -94,13 +89,13 @@ function initProceduralTextures() {
   brickTex.repeat.set(4, 3);
   proceduralTextures.brick = brickTex;
 
-  // (2) 傳統黑瓦 / 仰合瓦片紋理 (Traditional Roof Tiles Texture)
+  // (2) 傳統仰合瓦片紋理
   const tileCanvas = document.createElement("canvas");
   tileCanvas.width = 512;
   tileCanvas.height = 512;
   const tCtx = tileCanvas.getContext("2d");
 
-  tCtx.fillStyle = "#27303f"; // 墨灰黑瓦
+  tCtx.fillStyle = "#27303f";
   tCtx.fillRect(0, 0, 512, 512);
 
   const tileCols = 16;
@@ -124,17 +119,15 @@ function initProceduralTextures() {
   tileTex.repeat.set(3, 4);
   proceduralTextures.tile = tileTex;
 
-  // (3) 「武魁」匾額真實書法牌匾 (Wukui Calligraphy Plaque)
+  // (3) 「武魁」黑底金字大匾
   const wkCanvas = document.createElement("canvas");
   wkCanvas.width = 512;
   wkCanvas.height = 200;
   const wkCtx = wkCanvas.getContext("2d");
 
-  // 黑漆金絲楠木底
   wkCtx.fillStyle = "#0f141d";
   wkCtx.fillRect(0, 0, 512, 200);
 
-  // 雙重泥金回紋外框
   wkCtx.strokeStyle = "#f59e0b";
   wkCtx.lineWidth = 10;
   wkCtx.strokeRect(10, 10, 492, 180);
@@ -142,7 +135,6 @@ function initProceduralTextures() {
   wkCtx.lineWidth = 4;
   wkCtx.strokeRect(22, 22, 468, 156);
 
-  // 楷書大字「武魁」
   wkCtx.fillStyle = "#fbbf24";
   wkCtx.shadowColor = "#f59e0b";
   wkCtx.shadowBlur = 12;
@@ -151,7 +143,6 @@ function initProceduralTextures() {
   wkCtx.textBaseline = "middle";
   wkCtx.fillText("武 魁", 256, 102);
 
-  // 款識印章
   wkCtx.shadowBlur = 0;
   wkCtx.fillStyle = "#dc2626";
   wkCtx.fillRect(40, 60, 28, 80);
@@ -161,29 +152,26 @@ function initProceduralTextures() {
   wkCtx.fillText("豐", 54, 105);
   wkCtx.fillText("科", 54, 130);
 
-  const wkTex = new THREE.CanvasTexture(wkCanvas);
-  proceduralTextures.wukui = wkTex;
+  proceduralTextures.wukui = new THREE.CanvasTexture(wkCanvas);
 
-  // (4) 「兄弟同榜」正身大匾額 (Tong-Bang Brothers Plaque)
+  // (4) 「兄弟同榜」正廳牌匾
   const tbCanvas = document.createElement("canvas");
   tbCanvas.width = 600;
   tbCanvas.height = 180;
   const tbCtx = tbCanvas.getContext("2d");
 
-  tbCtx.fillStyle = "#1e130b"; // 沉木底
+  tbCtx.fillStyle = "#1e130b";
   tbCtx.fillRect(0, 0, 600, 180);
 
   tbCtx.strokeStyle = "#eab308";
   tbCtx.lineWidth = 8;
   tbCtx.strokeRect(8, 8, 584, 164);
 
-  // 巡撫題款
   tbCtx.fillStyle = "#fbbf24";
   tbCtx.font = "16px serif, 'DFKai-SB', '標楷體'";
   tbCtx.textAlign = "left";
   tbCtx.fillText("巡撫福建等處提督軍務 慶端 題贈", 40, 40);
 
-  // 四字「兄弟同榜」
   tbCtx.font = "bold 84px serif, 'DFKai-SB', '標楷體'";
   tbCtx.textAlign = "center";
   tbCtx.fillStyle = "#fef08a";
@@ -197,10 +185,9 @@ function initProceduralTextures() {
   tbCtx.fillStyle = "#fbbf24";
   tbCtx.fillText("咸豐己未恩科 賴步雲 賴登雲 立", 560, 150);
 
-  const tbTex = new THREE.CanvasTexture(tbCanvas);
-  proceduralTextures.tongbang = tbTex;
+  proceduralTextures.tongbang = new THREE.CanvasTexture(tbCanvas);
 
-  // (5) 綠釉花磚透窗 (Green-glazed Lattice Window)
+  // (5) 綠釉花磚透窗
   const gzCanvas = document.createElement("canvas");
   gzCanvas.width = 256;
   gzCanvas.height = 256;
@@ -209,44 +196,38 @@ function initProceduralTextures() {
   gzCtx.fillStyle = "#166534";
   gzCtx.fillRect(0, 0, 256, 256);
 
-  gzCtx.fillStyle = "#14532d";
   gzCtx.lineWidth = 14;
   gzCtx.strokeStyle = "#4ade80";
 
-  // 雙錢紋/古錢菱花通透孔洞
   const step = 64;
   for (let x = 32; x < 256; x += step) {
     for (let y = 32; y < 256; y += step) {
       gzCtx.beginPath();
       gzCtx.arc(x, y, 22, 0, Math.PI * 2);
-      gzCtx.fillStyle = "#0c1524"; // 透空背景
+      gzCtx.fillStyle = "#0c1524";
       gzCtx.fill();
       gzCtx.stroke();
 
-      // 錢紋內方孔
       gzCtx.fillStyle = "#4ade80";
       gzCtx.fillRect(x - 6, y - 6, 12, 12);
     }
   }
-  const gzTex = new THREE.CanvasTexture(gzCanvas);
-  proceduralTextures.glaze = gzTex;
+  proceduralTextures.glaze = new THREE.CanvasTexture(gzCanvas);
 
-  // (6) 三關六扇門朱紅雕花木門 (Carved Min-Nan Wooden Doors)
+  // (6) 三關六扇門朱紅雕花木門
   const drCanvas = document.createElement("canvas");
   drCanvas.width = 512;
   drCanvas.height = 512;
   const drCtx = drCanvas.getContext("2d");
 
-  drCtx.fillStyle = "#831816"; // 沉雄絳紅
+  drCtx.fillStyle = "#831816";
   drCtx.fillRect(0, 0, 512, 512);
 
-  // 門梃、橫檔、腰板線條
   drCtx.strokeStyle = "#380d0d";
   drCtx.lineWidth = 6;
   drCtx.strokeRect(12, 12, 238, 488);
   drCtx.strokeRect(262, 12, 238, 488);
 
-  // 鋪首銜環 (黃銅獸面銅環)
   [131, 381].forEach((dx) => {
     drCtx.beginPath();
     drCtx.arc(dx, 256, 22, 0, Math.PI * 2);
@@ -262,8 +243,7 @@ function initProceduralTextures() {
     drCtx.lineWidth = 5;
     drCtx.stroke();
   });
-  const drTex = new THREE.CanvasTexture(drCanvas);
-  proceduralTextures.door = drTex;
+  proceduralTextures.door = new THREE.CanvasTexture(drCanvas);
 }
 
 /* ==========================================================================
@@ -274,13 +254,13 @@ function init3DScene() {
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0c121e);
-  scene.fog = new THREE.FogExp2(0x0c121e, 0.007);
+  scene.fog = new THREE.FogExp2(0x0c121e, 0.0065);
 
   camera = new THREE.PerspectiveCamera(
-    46,
+    45,
     window.innerWidth / window.innerHeight,
     0.5,
-    650
+    700
   );
   camera.position.set(DEFAULT_CAM_POS.x, DEFAULT_CAM_POS.y, DEFAULT_CAM_POS.z);
 
@@ -298,38 +278,36 @@ function init3DScene() {
   controls.dampingFactor = 0.06;
   controls.maxPolarAngle = Math.PI / 2 - 0.04;
   controls.minDistance = 8;
-  controls.maxDistance = 200;
+  controls.maxDistance = 220;
   controls.target.set(DEFAULT_LOOK_AT.x, DEFAULT_LOOK_AT.y, DEFAULT_LOOK_AT.z);
 
-  const ambientLight = new THREE.AmbientLight(0xfff6eb, 0.8);
+  const ambientLight = new THREE.AmbientLight(0xfff6eb, 0.85);
   scene.add(ambientLight);
 
   const sunLight = new THREE.DirectionalLight(0xfffae6, 1.45);
-  sunLight.position.set(50, 80, 50);
+  sunLight.position.set(55, 85, 55);
   sunLight.castShadow = true;
   sunLight.shadow.mapSize.width = 2048;
   sunLight.shadow.mapSize.height = 2048;
   sunLight.shadow.camera.near = 1.0;
-  sunLight.shadow.camera.far = 260;
-  sunLight.shadow.camera.left = -70;
-  sunLight.shadow.camera.right = 70;
-  sunLight.shadow.camera.top = 70;
-  sunLight.shadow.camera.bottom = -70;
+  sunLight.shadow.camera.far = 280;
+  sunLight.shadow.camera.left = -75;
+  sunLight.shadow.camera.right = 75;
+  sunLight.shadow.camera.top = 75;
+  sunLight.shadow.camera.bottom = -75;
   sunLight.shadow.bias = -0.0003;
   scene.add(sunLight);
 
   const techFillLight = new THREE.DirectionalLight(0x38bdf8, 0.45);
-  techFillLight.position.set(-50, 35, -45);
+  techFillLight.position.set(-55, 40, -50);
   scene.add(techFillLight);
 
-  // 正身軒亭暖色照明
-  const hallLight = new THREE.PointLight(0xf97316, 3.2, 35);
-  hallLight.position.set(0, 5.5, -4);
+  const hallLight = new THREE.PointLight(0xf97316, 3.4, 40);
+  hallLight.position.set(0, 6, -6);
   scene.add(hallLight);
 
-  // 門樓紅燈籠光
-  const gateLight = new THREE.PointLight(0xef4444, 2.5, 25);
-  gateLight.position.set(0, 4.8, 20);
+  const gateLight = new THREE.PointLight(0xef4444, 2.6, 30);
+  gateLight.position.set(0, 5.2, 24);
   scene.add(gateLight);
 
   raycaster = new THREE.Raycaster();
@@ -337,17 +315,12 @@ function init3DScene() {
 }
 
 /* ==========================================================================
-   3. 具象化傳統閩南屋脊與構件建模工具 (Pitched Roofs & Swallowtails)
+   3. 屋頂與構件建模函式 (Pitched Roofs & Swallowtails)
    ========================================================================== */
-
-// 建立具象傳統雙坡仰合瓦屋頂 (雙面下斜屋頂，含真實出檐與瓦溝)
-function createPitchedRoof(width, depth, ridgeHeight, eaveOverhang = 0.8) {
+function createPitchedRoof(width, depth, ridgeHeight, eaveOverhang = 0.9) {
   const roofGroup = new THREE.Group();
-
-  const halfW = width / 2;
   const halfD = depth / 2 + eaveOverhang;
 
-  // 屋面幾何體 (雙斜坡)
   const roofShape = new THREE.Shape();
   roofShape.moveTo(-halfD, 0);
   roofShape.lineTo(0, ridgeHeight);
@@ -357,12 +330,7 @@ function createPitchedRoof(width, depth, ridgeHeight, eaveOverhang = 0.8) {
   roofShape.lineTo(-halfD + 0.25, -0.2);
   roofShape.closePath();
 
-  const extrudeSettings = {
-    steps: 1,
-    depth: width + eaveOverhang * 2,
-    bevelEnabled: false
-  };
-
+  const extrudeSettings = { steps: 1, depth: width + eaveOverhang * 2, bevelEnabled: false };
   const roofGeo = new THREE.ExtrudeGeometry(roofShape, extrudeSettings);
   roofGeo.center();
 
@@ -378,29 +346,26 @@ function createPitchedRoof(width, depth, ridgeHeight, eaveOverhang = 0.8) {
   roofMesh.receiveShadow = true;
   roofGroup.add(roofMesh);
 
-  // 屋頂正脊 (大脊)
-  const ridgeGeo = new THREE.BoxGeometry(width + eaveOverhang * 2.2, 0.45, 0.55);
+  const ridgeGeo = new THREE.BoxGeometry(width + eaveOverhang * 2.2, 0.5, 0.6);
   const ridgeMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.4 });
   const ridge = new THREE.Mesh(ridgeGeo, ridgeMat);
-  ridge.position.y = ridgeHeight / 2 + 0.2;
+  ridge.position.y = ridgeHeight / 2 + 0.22;
   roofGroup.add(ridge);
 
   return roofGroup;
 }
 
-// 建立優美高翹的傳統「燕尾脊」(Swallowtail Ridge Fork)
 function createSwallowtailTip(direction = 1) {
   const tipGroup = new THREE.Group();
 
-  // 弧形向上高挑之燕尾翼
   const curve = new THREE.CatmullRomCurve3([
     new THREE.Vector3(0, 0, 0),
-    new THREE.Vector3(direction * 1.2, 0.4, 0),
-    new THREE.Vector3(direction * 2.2, 1.4, 0),
-    new THREE.Vector3(direction * 2.9, 2.8, 0)
+    new THREE.Vector3(direction * 1.4, 0.5, 0),
+    new THREE.Vector3(direction * 2.5, 1.6, 0),
+    new THREE.Vector3(direction * 3.3, 3.1, 0)
   ]);
 
-  const tubeGeo = new THREE.TubeGeometry(curve, 16, 0.22, 8, false);
+  const tubeGeo = new THREE.TubeGeometry(curve, 16, 0.24, 8, false);
   const tipMat = new THREE.MeshStandardMaterial({
     color: 0xf59e0b,
     metalness: 0.7,
@@ -409,29 +374,26 @@ function createSwallowtailTip(direction = 1) {
   const tube = new THREE.Mesh(tubeGeo, tipMat);
   tipGroup.add(tube);
 
-  // 分叉剪尾尖端
-  const forkGeo = new THREE.ConeGeometry(0.18, 0.9, 6);
+  const forkGeo = new THREE.ConeGeometry(0.2, 1.0, 6);
   const fork1 = new THREE.Mesh(forkGeo, tipMat);
-  fork1.position.set(direction * 2.9, 3.1, -0.1);
+  fork1.position.set(direction * 3.3, 3.4, -0.12);
   fork1.rotation.z = direction * -0.3;
   tipGroup.add(fork1);
 
   const fork2 = new THREE.Mesh(forkGeo, tipMat);
-  fork2.position.set(direction * 3.1, 2.9, 0.1);
+  fork2.position.set(direction * 3.5, 3.2, 0.12);
   fork2.rotation.z = direction * -0.6;
   tipGroup.add(fork2);
 
   return tipGroup;
 }
 
-// 建立傳統金形馬背山牆 (Curved Horse-back Gable Wall)
-function createHorsebackWall(width, height, thickness = 0.5) {
+function createHorsebackWall(width, height, thickness = 0.55) {
   const shape = new THREE.Shape();
   const halfW = width / 2;
 
   shape.moveTo(-halfW, 0);
   shape.lineTo(-halfW, height * 0.65);
-  // 優美的金形半圓形馬背弧線
   shape.bezierCurveTo(-halfW * 0.7, height * 1.05, halfW * 0.7, height * 1.05, halfW, height * 0.65);
   shape.lineTo(halfW, 0);
   shape.closePath();
@@ -448,22 +410,21 @@ function createHorsebackWall(width, height, thickness = 0.5) {
 }
 
 /* ==========================================================================
-   4. 具象化大村武魁新厝（三合院官宅）古蹟完整場景建構
+   4. 具象化大村武魁新厝古蹟全景建模 (建築本體放大 1.3x，樹木去中心化)
    ========================================================================== */
 function buildRealisticWukuiAncestralHall() {
   const estate = new THREE.Group();
 
-  // (1) 宏大卡坦蜂巢六角浮島基座 (半徑 62)
-  const islandRadius = 62;
-  const islandHeight = 5.0;
-  const islandGeo = new THREE.CylinderGeometry(islandRadius, islandRadius * 1.04, islandHeight, 6);
+  // 浮島基地 (半徑 64)
+  const islandRadius = 64;
+  const islandGeo = new THREE.CylinderGeometry(islandRadius, islandRadius * 1.04, 5.0, 6);
   const islandMat = new THREE.MeshStandardMaterial({
     color: 0x1e293b,
     roughness: 0.85,
     metalness: 0.15
   });
   const island = new THREE.Mesh(islandGeo, islandMat);
-  island.position.y = -islandHeight / 2;
+  island.position.y = -2.5;
   island.receiveShadow = true;
   estate.add(island);
 
@@ -475,163 +436,158 @@ function buildRealisticWukuiAncestralHall() {
   grass.receiveShadow = true;
   estate.add(grass);
 
-  // 前埕泉州白石板大廣場 (Courtyard Plaza)
+  // 泉州白石板大前埕 (全面擴大至 48x40，氣勢恢宏)
   const stoneMat = new THREE.MeshStandardMaterial({ color: 0x7c756b, roughness: 0.8 });
-  const courtyardGeo = new THREE.BoxGeometry(40, 0.22, 36);
+  const courtyardGeo = new THREE.BoxGeometry(46, 0.22, 38);
   const courtyard = new THREE.Mesh(courtyardGeo, stoneMat);
-  courtyard.position.set(0, 0.2, 6);
+  courtyard.position.set(0, 0.2, 7);
   courtyard.receiveShadow = true;
   estate.add(courtyard);
 
-  // 聯外迎賓大道
-  const laneGeo = new THREE.BoxGeometry(7.5, 0.21, 32);
+  // 迎賓引道 (自貢旗一巷直通門樓)
+  const laneGeo = new THREE.BoxGeometry(8.5, 0.21, 36);
   const lane = new THREE.Mesh(laneGeo, stoneMat);
-  lane.position.set(0, 0.2, 40);
+  lane.position.set(0, 0.2, 44);
   lane.receiveShadow = true;
   estate.add(lane);
 
-  // 常用材質
-  const brickMat = new THREE.MeshStandardMaterial({
-    map: proceduralTextures.brick,
-    roughness: 0.8
+  // 環池石板步道
+  [-20, 20].forEach(px => {
+    const pWalk = new THREE.Mesh(new THREE.BoxGeometry(5.0, 0.21, 28), stoneMat);
+    pWalk.position.set(px, 0.2, 40);
+    pWalk.receiveShadow = true;
+    estate.add(pWalk);
   });
+
+  const brickMat = new THREE.MeshStandardMaterial({ map: proceduralTextures.brick, roughness: 0.8 });
   const graniteMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.7 });
   const darkTimberMat = new THREE.MeshStandardMaterial({ color: 0x3d2314, roughness: 0.75 });
 
   // ==========================================
-  // (2) 五開間正身 (5-Bay Main Ancestral Hall)
+  // (A) 五開間正身 (面寬擴大至 40m，氣派非凡)
   // ==========================================
   const mainHall = new THREE.Group();
-  mainHall.position.set(0, 0, -14);
+  mainHall.position.set(0, 0, -17);
 
-  // 花崗岩階梯與臺度基座
-  const podium = new THREE.Mesh(new THREE.BoxGeometry(34, 0.7, 10.5), graniteMat);
-  podium.position.set(0, 0.35, 0);
+  // 花崗岩基座
+  const podium = new THREE.Mesh(new THREE.BoxGeometry(40, 0.8, 11), graniteMat);
+  podium.position.set(0, 0.4, 0);
   podium.receiveShadow = true;
   mainHall.add(podium);
 
-  // 正身中央：明間 (凹壽退縮門廳，寬度 8.5m)
-  const recessBack = new THREE.Mesh(new THREE.BoxGeometry(8.5, 5.8, 0.6), brickMat);
-  recessBack.position.set(0, 3.6, -2.6);
+  // 明間 (凹壽退縮門廳，寬度 9.5m)
+  const recessBack = new THREE.Mesh(new THREE.BoxGeometry(9.5, 6.2, 0.6), brickMat);
+  recessBack.position.set(0, 3.8, -2.8);
   recessBack.castShadow = true;
   mainHall.add(recessBack);
 
-  // 凹壽左右八字牆
-  [-4.25, 4.25].forEach((rx) => {
-    const rWall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 5.8, 3.2), brickMat);
-    rWall.position.set(rx, 3.6, -1.0);
+  [-4.75, 4.75].forEach((rx) => {
+    const rWall = new THREE.Mesh(new THREE.BoxGeometry(0.6, 6.2, 3.4), brickMat);
+    rWall.position.set(rx, 3.8, -1.1);
     rWall.castShadow = true;
     mainHall.add(rWall);
   });
 
-  // 三關六扇雕花大門 (具象貼圖)
-  const doorMat = new THREE.MeshStandardMaterial({
-    map: proceduralTextures.door,
-    roughness: 0.5
-  });
-  const door = new THREE.Mesh(new THREE.BoxGeometry(4.8, 4.4, 0.15), doorMat);
-  door.position.set(0, 2.9, -2.25);
+  // 三關六扇雕花大門
+  const doorMat = new THREE.MeshStandardMaterial({ map: proceduralTextures.door, roughness: 0.5 });
+  const door = new THREE.Mesh(new THREE.BoxGeometry(5.4, 4.8, 0.15), doorMat);
+  door.position.set(0, 3.1, -2.4);
   mainHall.add(door);
 
-  // 凹壽簷柱 (前廊兩根圓形杉木立柱與石柱珠)
-  [-3.8, 3.8].forEach((px) => {
-    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.42, 0.3, 16), graniteMat);
-    plinth.position.set(px, 0.85, 0.3);
+  // 凹壽步口雙柱與柱珠
+  [-4.2, 4.2].forEach((px) => {
+    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.46, 0.35, 16), graniteMat);
+    plinth.position.set(px, 0.95, 0.35);
     mainHall.add(plinth);
 
-    const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.24, 4.8, 16), darkTimberMat);
-    pillar.position.set(px, 3.3, 0.3);
+    const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.26, 5.2, 16), darkTimberMat);
+    pillar.position.set(px, 3.6, 0.35);
     pillar.castShadow = true;
     mainHall.add(pillar);
   });
 
-  // 門額高懸：福建巡撫慶端題贈之「兄弟同榜」立體大匾
+  // 門額：福建巡撫慶端題贈「兄弟同榜」立體金匾
   const tongbangMesh = new THREE.Mesh(
-    new THREE.BoxGeometry(4.0, 1.25, 0.15),
+    new THREE.BoxGeometry(4.4, 1.35, 0.15),
     new THREE.MeshStandardMaterial({ map: proceduralTextures.tongbang, roughness: 0.35 })
   );
-  tongbangMesh.position.set(0, 5.25, -2.2);
+  tongbangMesh.position.set(0, 5.65, -2.35);
   mainHall.add(tongbangMesh);
 
-  // 左右次間 (各開直欞格扇窗)
-  [-9.2, 9.2].forEach((sx) => {
-    const subBay = new THREE.Mesh(new THREE.BoxGeometry(6.4, 5.5, 6.8), brickMat);
-    subBay.position.set(sx, 3.45, -0.5);
+  // 左右次間 (各開透窗)
+  [-10.5, 10.5].forEach((sx) => {
+    const subBay = new THREE.Mesh(new THREE.BoxGeometry(7.5, 5.8, 7.2), brickMat);
+    subBay.position.set(sx, 3.65, -0.6);
     subBay.castShadow = true;
     subBay.receiveShadow = true;
     mainHall.add(subBay);
 
-    // 綠釉/花格木窗
     const winMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(2.6, 2.4, 0.1),
+      new THREE.BoxGeometry(3.0, 2.6, 0.1),
       new THREE.MeshStandardMaterial({ map: proceduralTextures.glaze, roughness: 0.3 })
     );
-    winMesh.position.set(sx, 3.4, 2.92);
+    winMesh.position.set(sx, 3.6, 3.05);
     mainHall.add(winMesh);
   });
 
-  // 左右梢間 (面寬五開間延伸，略微降階)
-  [-15.0, 15.0].forEach((ex) => {
-    const endBay = new THREE.Mesh(new THREE.BoxGeometry(5.2, 5.0, 6.2), brickMat);
-    endBay.position.set(ex, 3.2, -0.5);
+  // 左右梢間
+  [-17.0, 17.0].forEach((ex) => {
+    const endBay = new THREE.Mesh(new THREE.BoxGeometry(6.0, 5.3, 6.6), brickMat);
+    endBay.position.set(ex, 3.4, -0.6);
     endBay.castShadow = true;
     endBay.receiveShadow = true;
     mainHall.add(endBay);
   });
 
-  // 具象雙坡仰合瓦大屋頂 (雙層硬山瓦頂)
-  const mainPitchedRoof = createPitchedRoof(35, 7.8, 3.8, 1.0);
-  mainPitchedRoof.position.set(0, 6.4, -0.5);
+  // 正身雙坡仰合瓦大屋頂
+  const mainPitchedRoof = createPitchedRoof(40, 8.4, 4.2, 1.2);
+  mainPitchedRoof.position.set(0, 6.8, -0.6);
   mainHall.add(mainPitchedRoof);
 
-  // 正身兩端高聳出挑之「雙燕尾脊」(Swallowtail Ridges)
+  // 兩端高聳之「雙燕尾脊」
   const leftSwallowtail = createSwallowtailTip(-1);
-  leftSwallowtail.position.set(-17.5, 8.4, -0.5);
+  leftSwallowtail.position.set(-20.5, 9.0, -0.6);
   mainHall.add(leftSwallowtail);
 
   const rightSwallowtail = createSwallowtailTip(1);
-  rightSwallowtail.position.set(17.5, 8.4, -0.5);
+  rightSwallowtail.position.set(20.5, 9.0, -0.6);
   mainHall.add(rightSwallowtail);
 
   estate.add(mainHall);
 
   // ==========================================
-  // (3) 獨立木造懸山軒亭（拜亭 Pavilion）
+  // (B) 獨立木造懸山軒亭（拜亭 Pavilion）
   // ==========================================
   const xuanTing = new THREE.Group();
-  xuanTing.position.set(0, 0, -8);
+  xuanTing.position.set(0, 0, -9.5);
 
-  // 軒亭花崗石基座
-  const xtPodium = new THREE.Mesh(new THREE.BoxGeometry(7.5, 0.5, 6.5), graniteMat);
-  xtPodium.position.set(0, 0.25, 0);
+  const xtPodium = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.55, 7.5), graniteMat);
+  xtPodium.position.set(0, 0.28, 0);
   xuanTing.add(xtPodium);
 
-  // 四根福州杉木圓柱與石雕柱珠
   [
-    [-3.0, -2.4],
-    [3.0, -2.4],
-    [-3.0, 2.4],
-    [3.0, 2.4]
+    [-3.4, -2.8],
+    [3.4, -2.8],
+    [-3.4, 2.8],
+    [3.4, 2.8]
   ].forEach(([px, pz]) => {
-    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.36, 0.25, 16), graniteMat);
-    plinth.position.set(px, 0.62, pz);
+    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.38, 0.28, 16), graniteMat);
+    plinth.position.set(px, 0.68, pz);
     xuanTing.add(plinth);
 
-    const column = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 4.4, 16), darkTimberMat);
-    column.position.set(px, 2.8, pz);
+    const column = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.24, 4.8, 16), darkTimberMat);
+    column.position.set(px, 3.1, pz);
     column.castShadow = true;
     xuanTing.add(column);
   });
 
-  // 軒亭懸山馬背頂 (雙坡垂檐)
-  const xtRoof = createPitchedRoof(8.4, 6.8, 2.4, 0.8);
-  xtRoof.position.set(0, 5.0, 0);
+  const xtRoof = createPitchedRoof(9.2, 7.5, 2.6, 0.9);
+  xtRoof.position.set(0, 5.5, 0);
   xuanTing.add(xtRoof);
 
-  // 軒亭側邊金形馬背山牆
-  [-3.8, 3.8].forEach((mx) => {
-    const mbWall = createHorsebackWall(5.4, 2.2, 0.3);
-    mbWall.position.set(mx, 5.2, 0);
+  [-4.2, 4.2].forEach((mx) => {
+    const mbWall = createHorsebackWall(6.0, 2.4, 0.35);
+    mbWall.position.set(mx, 5.7, 0);
     mbWall.rotation.y = Math.PI / 2;
     xuanTing.add(mbWall);
   });
@@ -639,157 +595,147 @@ function buildRealisticWukuiAncestralHall() {
   estate.add(xuanTing);
 
   // ==========================================
-  // (4) 左右護龍（東廂與西廂房，呈ㄇ字形圍合）
+  // (C) 左右護龍（東廂與西廂房，長度 32m）
   // ==========================================
-  const wingLength = 26;
-  const wingWidth = 6.0;
+  const wingLength = 32;
+  const wingWidth = 6.6;
 
-  // 東護龍 (左廂房 - UC07 常民文化展區)
+  // 東護龍 (左廂 - UC07 常民展示)
   const eastWing = new THREE.Group();
-  eastWing.position.set(17.5, 0, 0);
+  eastWing.position.set(21, 0, 2);
 
-  const eBody = new THREE.Mesh(new THREE.BoxGeometry(wingWidth, 4.8, wingLength), brickMat);
-  eBody.position.set(0, 2.4, 0);
+  const eBody = new THREE.Mesh(new THREE.BoxGeometry(wingWidth, 5.2, wingLength), brickMat);
+  eBody.position.set(0, 2.6, 0);
   eBody.castShadow = true;
   eBody.receiveShadow = true;
   eastWing.add(eBody);
 
-  const eRoof = createPitchedRoof(wingLength, wingWidth, 2.8, 0.8);
+  const eRoof = createPitchedRoof(wingLength, wingWidth, 3.0, 0.9);
   eRoof.rotation.y = Math.PI / 2;
-  eRoof.position.set(0, 4.8, 0);
+  eRoof.position.set(0, 5.2, 0);
   eastWing.add(eRoof);
 
-  // 護龍出挑檐廊木柱
-  for (let z = -10; z <= 10; z += 5) {
-    const p = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 4.2, 12), darkTimberMat);
-    p.position.set(-2.8, 2.1, z);
+  for (let z = -12; z <= 12; z += 6) {
+    const p = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 4.6, 12), darkTimberMat);
+    p.position.set(-3.2, 2.3, z);
     eastWing.add(p);
   }
 
-  // 南端山牆頭（金形馬背脊）
-  const eGable = createHorsebackWall(wingWidth, 2.8, 0.4);
-  eGable.position.set(0, 5.2, wingLength / 2);
+  const eGable = createHorsebackWall(wingWidth, 3.0, 0.45);
+  eGable.position.set(0, 5.7, wingLength / 2);
   eastWing.add(eGable);
 
   estate.add(eastWing);
 
-  // 西護龍 (右廂房 - UC08 互動問答展區)
+  // 西護龍 (右廂 - UC08 多媒體問答)
   const westWing = new THREE.Group();
-  westWing.position.set(-17.5, 0, 0);
+  westWing.position.set(-21, 0, 2);
 
-  const wBody = new THREE.Mesh(new THREE.BoxGeometry(wingWidth, 4.8, wingLength), brickMat);
-  wBody.position.set(0, 2.4, 0);
+  const wBody = new THREE.Mesh(new THREE.BoxGeometry(wingWidth, 5.2, wingLength), brickMat);
+  wBody.position.set(0, 2.6, 0);
   wBody.castShadow = true;
   wBody.receiveShadow = true;
   westWing.add(wBody);
 
-  const wRoof = createPitchedRoof(wingLength, wingWidth, 2.8, 0.8);
+  const wRoof = createPitchedRoof(wingLength, wingWidth, 3.0, 0.9);
   wRoof.rotation.y = Math.PI / 2;
-  wRoof.position.set(0, 4.8, 0);
+  wRoof.position.set(0, 5.2, 0);
   westWing.add(wRoof);
 
-  for (let z = -10; z <= 10; z += 5) {
-    const p = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 4.2, 12), darkTimberMat);
-    p.position.set(2.8, 2.1, z);
+  for (let z = -12; z <= 12; z += 6) {
+    const p = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.18, 4.6, 12), darkTimberMat);
+    p.position.set(3.2, 2.3, z);
     westWing.add(p);
   }
 
-  const wGable = createHorsebackWall(wingWidth, 2.8, 0.4);
-  wGable.position.set(0, 5.2, wingLength / 2);
+  const wGable = createHorsebackWall(wingWidth, 3.0, 0.45);
+  wGable.position.set(0, 5.7, wingLength / 2);
   westWing.add(wGable);
 
   estate.add(westWing);
 
   // ==========================================
-  // (5) 獨立硬山燕尾門樓（院門）與院牆
+  // (D) 獨立硬山燕尾門樓（院門）與院牆
   // ==========================================
   const gateHouse = new THREE.Group();
-  gateHouse.position.set(0, 0, 20);
+  gateHouse.position.set(0, 0, 24);
 
-  // 門樓磚石主體
-  const gateWall = new THREE.Mesh(new THREE.BoxGeometry(9.0, 5.2, 3.2), brickMat);
-  gateWall.position.set(0, 2.6, 0);
+  const gateWall = new THREE.Mesh(new THREE.BoxGeometry(10.5, 5.5, 3.6), brickMat);
+  gateWall.position.set(0, 2.75, 0);
   gateWall.castShadow = true;
   gateHouse.add(gateWall);
 
-  // 中門深邃拱洞通道
   const tunnel = new THREE.Mesh(
-    new THREE.BoxGeometry(3.2, 4.0, 3.5),
+    new THREE.BoxGeometry(3.6, 4.2, 4.0),
     new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.9 })
   );
-  tunnel.position.set(0, 2.0, 0);
+  tunnel.position.set(0, 2.1, 0);
   gateHouse.add(tunnel);
 
-  // 門樓大門門額：高懸正統黑底金字「武魁」金石匾額！
+  // 門額：「武魁」大匾
   const wukuiMesh = new THREE.Mesh(
-    new THREE.BoxGeometry(3.2, 1.2, 0.12),
+    new THREE.BoxGeometry(3.6, 1.3, 0.15),
     new THREE.MeshStandardMaterial({ map: proceduralTextures.wukui, roughness: 0.3 })
   );
-  wukuiMesh.position.set(0, 4.35, 1.68);
+  wukuiMesh.position.set(0, 4.6, 1.88);
   gateHouse.add(wukuiMesh);
 
-  // 門額兩側：精美綠釉花磚透窗
-  [-2.9, 2.9].forEach((gx) => {
+  // 門樓透窗
+  [-3.4, 3.4].forEach((gx) => {
     const glazeMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(1.6, 1.8, 0.12),
+      new THREE.BoxGeometry(1.8, 2.0, 0.12),
       new THREE.MeshStandardMaterial({ map: proceduralTextures.glaze, roughness: 0.25 })
     );
-    glazeMesh.position.set(gx, 2.7, 1.64);
+    glazeMesh.position.set(gx, 2.8, 1.84);
     gateHouse.add(glazeMesh);
   });
 
-  // 門樓硬山雙坡瓦頂
-  const gateRoof = createPitchedRoof(10.2, 4.4, 2.6, 0.8);
-  gateRoof.position.set(0, 5.4, 0);
+  const gateRoof = createPitchedRoof(12.0, 4.8, 2.8, 0.9);
+  gateRoof.position.set(0, 5.8, 0);
   gateHouse.add(gateRoof);
 
-  // 門樓專屬高翹「武魁燕尾」(Swallowtail Ridge)
   const gLeftTip = createSwallowtailTip(-1);
-  gLeftTip.position.set(-5.6, 6.8, 0);
+  gLeftTip.position.set(-6.5, 7.2, 0);
   gateHouse.add(gLeftTip);
 
   const gRightTip = createSwallowtailTip(1);
-  gRightTip.position.set(5.6, 6.8, 0);
+  gRightTip.position.set(6.5, 7.2, 0);
   gateHouse.add(gRightTip);
 
-  // 門樓兩側斗仔砌紅磚矮院牆 (區隔內埕與外池)
-  [-10.8, 10.8].forEach((wx) => {
-    const wall = new THREE.Mesh(new THREE.BoxGeometry(7.5, 2.4, 0.6), brickMat);
-    wall.position.set(wx, 1.2, 0);
+  // 院牆
+  [-13.5, 13.5].forEach((wx) => {
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(9.0, 2.5, 0.6), brickMat);
+    wall.position.set(wx, 1.25, 0);
     wall.castShadow = true;
     gateHouse.add(wall);
 
-    // 院牆綠琉璃瓦壓頂
     const cap = new THREE.Mesh(
-      new THREE.BoxGeometry(7.8, 0.2, 0.9),
+      new THREE.BoxGeometry(9.2, 0.2, 0.9),
       new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.4 })
     );
-    cap.position.set(wx, 2.45, 0);
+    cap.position.set(wx, 2.55, 0);
     gateHouse.add(cap);
   });
 
   estate.add(gateHouse);
 
   // ==========================================
-  // (6) 半月形風水池 (Half-Moon Feng-Shui Pond)
+  // (E) 半月形風水池
   // ==========================================
   const pond = new THREE.Group();
-  pond.position.set(0, 0, 36);
+  pond.position.set(0, 0, 38);
 
-  // 弧形石砌駁岸池壁 (半月形)
-  const curbGeo = new THREE.CylinderGeometry(15.5, 15.5, 0.45, 48, 1, false, 0, Math.PI);
+  const curbGeo = new THREE.CylinderGeometry(17.5, 17.5, 0.5, 48, 1, false, 0, Math.PI);
   const curbMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.75 });
   const curb = new THREE.Mesh(curbGeo, curbMat);
-  curb.position.y = 0.22;
+  curb.position.y = 0.25;
   pond.add(curb);
 
-  // 平整後駁岸石條
-  const backCurb = new THREE.Mesh(new THREE.BoxGeometry(31, 0.45, 0.8), curbMat);
-  backCurb.position.set(0, 0.22, 0);
+  const backCurb = new THREE.Mesh(new THREE.BoxGeometry(35, 0.5, 0.9), curbMat);
+  backCurb.position.set(0, 0.25, 0);
   pond.add(backCurb);
 
-  // 清澈波光半月水面
-  const waterGeo = new THREE.CircleGeometry(15.0, 48, 0, Math.PI);
+  const waterGeo = new THREE.CircleGeometry(17.0, 48, 0, Math.PI);
   const waterMat = new THREE.MeshStandardMaterial({
     color: 0x0284c7,
     roughness: 0.08,
@@ -799,138 +745,131 @@ function buildRealisticWukuiAncestralHall() {
   });
   waterMesh = new THREE.Mesh(waterGeo, waterMat);
   waterMesh.rotation.x = -Math.PI / 2;
-  waterMesh.position.y = 0.24;
+  waterMesh.position.y = 0.28;
   pond.add(waterMesh);
 
-  // 水生睡蓮葉裝飾
   const lilyMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.6 });
   [
-    [-6, 4],
-    [-2, 9],
-    [5, 6],
-    [9, 3]
+    [-7, 5],
+    [-3, 11],
+    [6, 7],
+    [10, 4]
   ].forEach(([lx, lz]) => {
-    const lily = new THREE.Mesh(new THREE.CircleGeometry(0.85, 16), lilyMat);
+    const lily = new THREE.Mesh(new THREE.CircleGeometry(0.95, 16), lilyMat);
     lily.rotation.x = -Math.PI / 2;
-    lily.position.set(lx, 0.26, lz);
+    lily.position.set(lx, 0.3, lz);
     pond.add(lily);
   });
 
   estate.add(pond);
 
   // ==========================================
-  // (7) 咸豐九年賴氏雙舉人旗杆石座與高聳令旗群
+  // (F) 咸豐九年賴氏雙舉人旗杆石座群
   // ==========================================
-  [-7.5, 7.5].forEach((fx) => {
-    // 雕花花崗石雙石夾柱基座 (旗杆夾石)
-    const baseP1 = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.6, 1.8), graniteMat);
-    baseP1.position.set(fx, 0.3, 10);
+  [-9, 9].forEach((fx) => {
+    const baseP1 = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.65, 2.0), graniteMat);
+    baseP1.position.set(fx, 0.32, 10);
     baseP1.castShadow = true;
     estate.add(baseP1);
 
-    // 兩片石夾板柱
-    [-0.5, 0.5].forEach((ox) => {
-      const slab = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.8, 1.2), graniteMat);
-      slab.position.set(fx + ox, 1.5, 10);
+    [-0.6, 0.6].forEach((ox) => {
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(0.4, 2.0, 1.4), graniteMat);
+      slab.position.set(fx + ox, 1.6, 10);
       slab.castShadow = true;
       estate.add(slab);
     });
 
-    // 朱紅高聳旗杆 (武舉人令杆)
     const poleMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.5 });
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.22, 12, 16), poleMat);
-    pole.position.set(fx, 7.0, 10);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.24, 13, 16), poleMat);
+    pole.position.set(fx, 7.5, 10);
     pole.castShadow = true;
     estate.add(pole);
 
-    // 橫插鐵斗 (旗杆斗)
-    const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.35, 0.5, 8), darkTimberMat);
-    bucket.position.set(fx, 9.8, 10);
+    const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.4, 0.55, 8), darkTimberMat);
+    bucket.position.set(fx, 10.5, 10);
     estate.add(bucket);
 
-    // 咸豐九年武舉人旌旗 (金黃鑲邊朱紅旗面)
-    const flagGeo = new THREE.PlaneGeometry(2.6, 1.6);
+    const flagGeo = new THREE.PlaneGeometry(2.8, 1.8);
     const flagMat = new THREE.MeshStandardMaterial({
       color: 0xdc2626,
       side: THREE.DoubleSide,
       roughness: 0.5
     });
     const flag = new THREE.Mesh(flagGeo, flagMat);
-    flag.position.set(fx + 1.3, 11.5, 10);
+    flag.position.set(fx + 1.4, 12.2, 10);
     estate.add(flag);
   });
 
   // ==========================================
-  // (8) 彰化大村巨峰葡萄藤架與鄉村老樹
+  // (G) 大村巨峰葡萄藤架與弱化後的背景樹
   // ==========================================
   buildDacunRuralLandscape(estate);
 
   scene.add(estate);
 }
 
-// 彰化大村巨峰葡萄藤架與鄉村造景
+// 大村巨峰葡萄藤架（弱化周邊雜樹，保留開闊大器）
 function buildDacunRuralLandscape(parent) {
+  // 西側：大村巨峰葡萄藤架 (UC10 專區)
   const trellisGroup = new THREE.Group();
-  trellisGroup.position.set(-28, 0, -6);
+  trellisGroup.position.set(-32, 0, -5);
 
   const woodPoleMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.9 });
   const vineLeafMat = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.7 });
   const grapeMat = new THREE.MeshStandardMaterial({ color: 0x581c87, roughness: 0.35 });
 
-  for (let x = -3; x <= 3; x += 3) {
-    for (let z = -5; z <= 5; z += 5) {
-      const p = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 3.4, 8), woodPoleMat);
-      p.position.set(x, 1.7, z);
+  for (let x = -4; x <= 4; x += 4) {
+    for (let z = -6; z <= 6; z += 6) {
+      const p = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 3.6, 8), woodPoleMat);
+      p.position.set(x, 1.8, z);
       trellisGroup.add(p);
     }
   }
 
-  const canopyGeo = new THREE.BoxGeometry(7.5, 0.35, 11.5);
+  const canopyGeo = new THREE.BoxGeometry(9.0, 0.35, 13.5);
   const canopy = new THREE.Mesh(canopyGeo, vineLeafMat);
-  canopy.position.set(0, 3.4, 0);
+  canopy.position.set(0, 3.6, 0);
   trellisGroup.add(canopy);
 
   [
-    [-1.5, 2.8, -3],
-    [1.5, 2.8, -1],
-    [-0.5, 2.8, 2],
-    [1.8, 2.8, 4]
+    [-2.0, 3.0, -3.5],
+    [2.0, 3.0, -1.5],
+    [-0.8, 3.0, 2.5],
+    [2.2, 3.0, 4.5]
   ].forEach(([gx, gy, gz]) => {
-    const bunch = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.75, 8), grapeMat);
+    const bunch = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.85, 8), grapeMat);
     bunch.position.set(gx, gy, gz);
     trellisGroup.add(bunch);
   });
 
   parent.add(trellisGroup);
 
-  // 四周老榕樹與竹林
+  // 僅在島嶼極外緣角落保留 4 棵低多邊形背景樹，不喧賓奪主
   const treePositions = [
-    [-35, 0, -22],
-    [35, 0, -22],
-    [-37, 0, 18],
-    [37, 0, 20],
-    [-24, 0, 42],
-    [26, 0, 44]
+    [-46, 0, -32],
+    [46, 0, -32],
+    [-46, 38],
+    [46, 38]
   ];
 
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x3d2817, roughness: 0.9 });
   const foliageMat = new THREE.MeshStandardMaterial({ color: 0x19452b, roughness: 0.8 });
 
-  treePositions.forEach(([tx, ty, tz]) => {
-    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.85, 5.2, 8), trunkMat);
-    trunk.position.set(tx, 2.6, tz);
+  treePositions.forEach(([tx, tz]) => {
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.75, 5.0, 8), trunkMat);
+    trunk.position.set(tx, 2.5, tz);
     trunk.castShadow = true;
     parent.add(trunk);
 
-    const foliage = new THREE.Mesh(new THREE.DodecahedronGeometry(3.8, 1), foliageMat);
-    foliage.position.set(tx, 6.8, tz);
+    const foliage = new THREE.Mesh(new THREE.DodecahedronGeometry(3.6, 1), foliageMat);
+    foliage.position.set(tx, 6.5, tz);
     foliage.castShadow = true;
     parent.add(foliage);
   });
 }
 
 /* ==========================================================================
-   5. 12 個獨立用例 (UC01 ~ UC12) 3D 地標節點 (高挑開闊、無遮蔽)
+   5. 12 個獨立用例 3D 地標節點 (高挑開闊、拓撲無碰撞)
    ========================================================================== */
 function build12UCStationBeacons() {
   const stationGroup = new THREE.Group();
@@ -941,8 +880,7 @@ function build12UCStationBeacons() {
     subGroup.position.set(x, y, z);
     subGroup.userData = { ucIndex: index, ucId: uc.id };
 
-    // 卡坦島式六角獨立小地台
-    const hexGeo = new THREE.CylinderGeometry(2.3, 2.5, 0.5, 6);
+    const hexGeo = new THREE.CylinderGeometry(2.2, 2.4, 0.5, 6);
     const hexMat = new THREE.MeshStandardMaterial({
       color: 0x0f172a,
       metalness: 0.3,
@@ -953,7 +891,6 @@ function build12UCStationBeacons() {
     hexPlatform.receiveShadow = true;
     subGroup.add(hexPlatform);
 
-    // 科技感應發光圓環
     const ringGeo = new THREE.RingGeometry(1.6, 2.15, 32);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0x22d3ee,
@@ -966,7 +903,6 @@ function build12UCStationBeacons() {
     ring.position.y = 0.52;
     subGroup.add(ring);
 
-    // 垂直微光柱
     const beamGeo = new THREE.CylinderGeometry(0.1, 0.1, 5.0, 8);
     const beamMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
@@ -977,12 +913,10 @@ function build12UCStationBeacons() {
     beam.position.y = 2.75;
     subGroup.add(beam);
 
-    // 懸浮 3D 標籤看板 (高度 5.8m，永不被屋簷遮蔽)
     const sprite = createUCSprite(uc.id, index + 1);
     sprite.position.y = 5.8;
     subGroup.add(sprite);
 
-    // 點擊碰撞盒
     const hitBoxGeo = new THREE.CylinderGeometry(2.7, 2.7, 6.5, 8);
     const hitBoxMat = new THREE.MeshBasicMaterial({ visible: false });
     const hitBox = new THREE.Mesh(hitBoxGeo, hitBoxMat);
@@ -1046,11 +980,11 @@ function roundRect(ctx, x, y, width, height, radius) {
 }
 
 /* ==========================================================================
-   6. 3D 自主移動導覽機器人 (AMR Robot) 模型建構
+   6. 3D 自主移動導覽機器人 (AMR Robot)
    ========================================================================== */
 function buildAMRRobot() {
   robotGroup = new THREE.Group();
-  robotGroup.position.set(0, 0.35, 24);
+  robotGroup.position.set(0, 0.35, 28); // 初始待命位置 (在燕尾門樓迎賓位)
 
   const chassisGeo = new THREE.CylinderGeometry(1.0, 1.15, 0.75, 32);
   const chassisMat = new THREE.MeshStandardMaterial({
@@ -1113,7 +1047,7 @@ function buildAMRRobot() {
 }
 
 /* ==========================================================================
-   7. UI 與事件系統
+   7. UI、抽屜排版與分頁切換系統
    ========================================================================== */
 function setupUI() {
   const dockContainer = document.getElementById("dock-items");
@@ -1167,14 +1101,17 @@ function selectUC(index, triggerCameraMove = true) {
   renderUCDrawer(uc);
 }
 
+// 抽屜詳細資料渲染 (精美結構化分頁)
 function renderUCDrawer(uc) {
   document.getElementById("drawer-category").innerText = uc.category;
+  document.getElementById("drawer-counter").innerText = `${uc.num} / 12`;
   document.getElementById("drawer-id").innerText = uc.id;
   document.getElementById("drawer-title").innerText = uc.title;
   document.getElementById("drawer-title-en").innerText = uc.titleEn;
   document.getElementById("drawer-loc-name").innerText = uc.locationName;
   document.getElementById("drawer-loc-desc").innerText = uc.locationDesc;
 
+  // 參與者 Actors
   const actorsEl = document.getElementById("drawer-actors");
   actorsEl.innerHTML = uc.actors
     .map(
@@ -1183,16 +1120,24 @@ function renderUCDrawer(uc) {
         <span class="icon">${a.icon}</span>
         <div>
           <strong>${a.name}</strong>
-          <span style="font-size: 0.72rem; color: #94a3b8; display: block;">${a.role}</span>
+          <div>
+            <span class="role-tag">[${a.role}]</span>
+            <span class="desc-tag">${a.desc}</span>
+          </div>
         </div>
       </div>
     `
     )
     .join("");
 
+  // 前置與後置條件
   const precondsEl = document.getElementById("drawer-preconds");
   precondsEl.innerHTML = uc.preConditions.map((c) => `<li>${c}</li>`).join("");
 
+  const postcondsEl = document.getElementById("drawer-postconds");
+  postcondsEl.innerHTML = uc.postConditions.map((c) => `<li>${c}</li>`).join("");
+
+  // 主要事件流 (時間軸)
   const flowEl = document.getElementById("drawer-event-flow");
   flowEl.innerHTML = uc.eventFlow
     .map(
@@ -1205,6 +1150,7 @@ function renderUCDrawer(uc) {
     )
     .join("");
 
+  // UML 循序步驟
   const seqEl = document.getElementById("drawer-seq-box");
   seqEl.innerHTML = uc.sequenceSteps
     .map(
@@ -1213,15 +1159,13 @@ function renderUCDrawer(uc) {
         <span class="seq-from">${sq.from}</span>
         <span class="seq-arrow">➔</span>
         <span class="seq-msg">${sq.msg}</span>
-        <span class="seq-to">[${sq.to}]</span>
+        <span class="seq-to">${sq.to}</span>
       </div>
     `
     )
     .join("");
 
-  const postcondsEl = document.getElementById("drawer-postconds");
-  postcondsEl.innerHTML = uc.postConditions.map((c) => `<li>${c}</li>`).join("");
-
+  // 技術標籤
   const techEl = document.getElementById("drawer-tech");
   techEl.innerHTML = uc.techStack.map((t) => `<span class="tech-tag">${t}</span>`).join("");
 
@@ -1325,6 +1269,21 @@ function speakText(text) {
   utterance.lang = "zh-TW";
   utterance.rate = 1.0;
   utterance.pitch = 1.05;
+
+  const audioWave = document.getElementById("audio-wave");
+  const speakTextEl = document.getElementById("speak-btn-text");
+  if (audioWave) audioWave.classList.add("playing");
+  if (speakTextEl) speakTextEl.innerText = "語音播放中...";
+
+  utterance.onend = () => {
+    if (audioWave) audioWave.classList.remove("playing");
+    if (speakTextEl) speakTextEl.innerText = "聆聽機器人解說";
+  };
+  utterance.onerror = () => {
+    if (audioWave) audioWave.classList.remove("playing");
+    if (speakTextEl) speakTextEl.innerText = "聆聽機器人解說";
+  };
+
   window.speechSynthesis.speak(utterance);
 }
 
@@ -1333,6 +1292,7 @@ function setupEvents() {
   window.addEventListener("mousemove", onMouseMove);
   window.addEventListener("click", onCanvasClick);
 
+  // 巡航導覽
   document.getElementById("btn-tour").addEventListener("click", () => {
     if (isTourRunning) {
       stopGuidedTour();
@@ -1344,6 +1304,7 @@ function setupEvents() {
   document.getElementById("btn-stop-tour").addEventListener("click", stopGuidedTour);
   document.getElementById("btn-reset-cam").addEventListener("click", resetCameraView);
 
+  // 機器人視角
   document.getElementById("btn-robot-cam").addEventListener("click", () => {
     isRobotCamActive = !isRobotCamActive;
     document.getElementById("btn-robot-cam").classList.toggle("active", isRobotCamActive);
@@ -1352,10 +1313,24 @@ function setupEvents() {
     }
   });
 
+  // 抽屜關閉
   document.getElementById("drawer-close-btn").addEventListener("click", () => {
     document.getElementById("uc-drawer").classList.remove("open");
   });
 
+  // 抽屜分頁切換 (規格流程 vs 循序圖技術)
+  document.querySelectorAll(".drawer-tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".drawer-tab-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
+      btn.classList.add("active");
+      const targetTab = btn.getAttribute("data-tab");
+      const targetEl = document.getElementById(targetTab);
+      if (targetEl) targetEl.classList.add("active");
+    });
+  });
+
+  // 上一個 / 下一個用例切換
   document.getElementById("btn-prev-uc").addEventListener("click", () => {
     const prev = (activeUCIndex - 1 + UC_DATA.length) % UC_DATA.length;
     selectUC(prev, true);
@@ -1366,11 +1341,13 @@ function setupEvents() {
     selectUC(next, true);
   });
 
+  // 語音播放
   document.getElementById("btn-speak").addEventListener("click", () => {
     const currentUC = UC_DATA[activeUCIndex];
     speakText(currentUC.speechText);
   });
 
+  // 歷史文史 Modal
   document.getElementById("btn-info").addEventListener("click", () => {
     document.getElementById("info-modal").classList.add("open");
   });
@@ -1426,7 +1403,7 @@ function onCanvasClick(event) {
 }
 
 /* ==========================================================================
-   8. 動畫循環
+   8. 主動畫渲染循環
    ========================================================================== */
 function animate(time) {
   requestAnimationFrame(animate);
