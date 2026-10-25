@@ -1,7 +1,8 @@
 /**
  * 大村武魁祠 × AMR 自主移動機器人智慧導覽系統
  * 12 個獨立用例 (UC01 ~ UC12) 詳細資料庫
- * 地點：彰化縣定古蹟「大村武魁新厝」（大村武魁祠 / 貢旗村賴家古厝）
+ * 實證場域：彰化縣定古蹟「大村武魁新厝」（武魁祠 / 賴登雲故居）
+ * 參照 Google 實地地景：五開間正身、凹壽、懸山軒亭、硬山雙燕尾、獨立燕尾門樓、半月風水池、舉人旗杆群與大村葡萄果園
  */
 
 const UC_DATA = [
@@ -11,34 +12,34 @@ const UC_DATA = [
     title: "偵測訪客",
     titleEn: "Detect Visitor",
     category: "門口迎賓感知",
-    locationName: "武魁祠外門 / 貢旗巷口迎賓區",
-    locationDesc: "武魁祠外圍入口處，訪客由大村鄉貢旗一巷進入古蹟園區之第一道感測邊界。",
-    pos: [-14, 0, 16],
+    locationName: "貢旗一巷園區外圍迎賓接駁區",
+    locationDesc: "武魁祠最外圍路口（大村鄉貢旗一巷接駁點），訪客自鄉村道路踏入古蹟園區之第一道 AI 邊界感測線。",
+    pos: [0, 0, 48],
     actors: [
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "進入武魁祠參訪之民眾" },
-      { name: "大門口智慧鏡頭", role: "Entrance Camera", icon: "📷", desc: "搭載邊緣 AI (YOLO) 之人體視覺辨識鏡頭" }
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "自貢旗一巷踏入武魁祠園區之參訪民眾" },
+      { name: "大門口智慧鏡頭", role: "Entrance Camera", icon: "📷", desc: "搭載邊緣 AI (YOLO) 之全天候視覺感知鏡頭" }
     ],
     preConditions: [
       "大門口 AI 智慧邊緣監控鏡頭處於正常上線運作狀態。",
-      "園區邊界感測網路 (Wi-Fi / LAN) 通訊正常。"
+      "園區邊界通訊網路 (Wi-Fi 6 / 5G 專網) 連線順暢。"
     ],
     postConditions: [
-      "成功觸發訪客辨識事件，取得訪客進門時間戳記與初步空間座標特徵。",
-      "啟動 UC02 迎賓通知封裝。"
+      "Edge AI 成功辨識進入園區之訪客特徵與時間戳記，生成入場事件封包。",
+      "即刻喚醒 UC02 迎賓通知封裝程序。"
     ],
     eventFlow: [
-      { step: 1, text: "遊客自大村貢旗一巷步行踏入武魁祠外門感測範圍。" },
-      { step: 2, text: "大門口智慧鏡頭即時捕捉高解析度串流影像。" },
-      { step: 3, text: "鏡頭內建 Edge AI 晶片執行 YOLO 物件偵測，精準辨識人體特徵並排除樹影或車輛干擾。" },
-      { step: 4, text: "系統生成訪客抵達事件特徵資料。" }
+      { step: 1, text: "遊客自大村鄉貢旗一巷漫步進入武魁祠外圍接駁迎賓區。" },
+      { step: 2, text: "外圍智慧立柱相機捕捉人體行進串流影像。" },
+      { step: 3, text: "邊緣運算晶片運行 YOLOv8 演算法，辨識訪客並過濾農村落葉與光影干擾。" },
+      { step: 4, text: "系統生成高精度訪客入場事件特徵數據。" }
     ],
     sequenceSteps: [
-      { from: "遊客", to: "大門智慧鏡頭", msg: "步行踏入外門感測範圍", type: "action" },
-      { from: "大門智慧鏡頭", to: "大門智慧鏡頭", msg: "YOLO 邊緣運算即時辨識人體特徵", type: "internal" },
-      { from: "大門智慧鏡頭", to: "中控伺服器", msg: "觸發訪客到達事件 (時間/特徵)", type: "async" }
+      { from: "遊客", to: "外門智慧鏡頭", msg: "踏入貢旗一巷外圍感測區", type: "action" },
+      { from: "外門智慧鏡頭", to: "外門智慧鏡頭", msg: "YOLOv8 即時邊緣人體特徵分析", type: "internal" },
+      { from: "外門智慧鏡頭", to: "中控伺服器", msg: "發布 /wukui/visitor/arrival 入場事件", type: "async" }
     ],
-    techStack: ["YOLOv8 Edge AI", "OpenCV", "邊緣計算晶片", "RTSP 串流"],
-    speechText: "大門口智慧鏡頭已成功辨識訪客踏入大村武魁祠外門，觸發自動迎賓系統。"
+    techStack: ["YOLOv8 Edge AI", "OpenCV 影像處理", "邊緣運算模組", "RTSP 串流協定"],
+    speechText: "大門口智慧鏡頭已成功辨識訪客踏入大村武魁祠外圍迎賓區，自動啟動導覽迎賓機制。"
   },
   {
     id: "UC02",
@@ -46,34 +47,34 @@ const UC_DATA = [
     title: "發送迎賓通知",
     titleEn: "Send Greeting Notification",
     category: "門口迎賓感知",
-    locationName: "古蹟物聯網中控通訊樞紐",
-    locationDesc: "設於武魁祠側廂之中控伺服器與 MQTT Broker 物聯網閘道。",
-    pos: [-10, 0, 14],
+    locationName: "半月風水池東側綠蔭物聯網通訊站",
+    locationDesc: "座落於半月風水池東側古樹步道旁的中控伺服器節點與物聯網 MQTT 閘道通訊亭。",
+    pos: [18, 0, 40],
     actors: [
-      { name: "大門口智慧鏡頭", role: "Entrance Camera", icon: "📷", desc: "事件發送端" },
-      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "任務中繼協調與排程引擎" },
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "迎賓任務接收終端" }
+      { name: "大門口智慧鏡頭", role: "Entrance Camera", icon: "📷", desc: "事件辨識發送端" },
+      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "事件中繼、排程與狀態協調核心" },
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "迎賓任務接收與導航實體" }
     ],
     preConditions: [
-      "UC01 成功偵測到新進訪客。",
-      "中央控制伺服器 MQTT Broker 服務運作中。"
+      "UC01 成功偵測到新進訪客事件。",
+      "武魁祠中控伺服器 MQTT Broker 連線服務正常運作中。"
     ],
     postConditions: [
-      "中控伺服器成功濾除重複雜訊，並向 AMR 推送派工指令與迎賓目標座標。"
+      "中控伺服器過濾重複觸發，並向 AMR 機器人發送迎賓派工請求與山門門樓坐標。"
     ],
     eventFlow: [
-      { step: 1, text: "大門智慧鏡頭將人體辨識結果封裝為標準 MQTT JSON 資料封包。" },
-      { step: 2, text: "封包經由專用無線通訊傳送至武魁祠中控伺服器。" },
-      { step: 3, text: "中控伺服器執行去重過濾（Debounce），避免短時間重複觸發干擾。" },
-      { step: 4, text: "伺服器派發迎賓派遣任務 (Dispatch Task) 至 AMR 導覽機器人。" }
+      { step: 1, text: "外門鏡頭將人體特徵封裝為標準 MQTT JSON 資料封包。" },
+      { step: 2, text: "通訊閘道以低延遲無線網路發送至中控通訊樞紐。" },
+      { step: 3, text: "中控伺服器比對事件時間戳，啟動去重（Debounce）機制防止短時間重複派遣。" },
+      { step: 4, text: "派工排程引擎指派 AMR 前往獨立燕尾門樓迎賓停靠點。" }
     ],
     sequenceSteps: [
-      { from: "大門智慧鏡頭", to: "中控伺服器", msg: "MQTT 發布 /wukui/visitor/arrival 封包", type: "sync" },
-      { from: "中控伺服器", to: "中控伺服器", msg: "防重複觸發防護與狀態檢查", type: "internal" },
-      { from: "中控伺服器", to: "導覽機器人", msg: "推播迎賓派工請求與大門迎賓座標", type: "async" }
+      { from: "外門智慧鏡頭", to: "中控伺服器", msg: "MQTT 推送新訪客座標與時間戳", type: "sync" },
+      { from: "中控伺服器", to: "中控伺服器", msg: "Debounce 防重複觸發與任務佇列排程", type: "internal" },
+      { from: "中控伺服器", to: "導覽機器人", msg: "派送迎賓指令與山門門樓迎賓座標", type: "async" }
     ],
-    techStack: ["MQTT Broker", "RESTful API", "Event Debounce", "JSON Schema"],
-    speechText: "中央控制伺服器已處理迎賓訊息，派送導航任務至導覽機器人。"
+    techStack: ["MQTT Broker", "RESTful API", "Event Debounce", "JSON Schema 封包"],
+    speechText: "中央控制伺服器已完成任務排程，派遣 AMR 導覽機器人前往燕尾門樓迎賓點。"
   },
   {
     id: "UC03",
@@ -81,34 +82,34 @@ const UC_DATA = [
     title: "執行迎賓導航",
     titleEn: "Execute Greeting Navigation",
     category: "門口迎賓感知",
-    locationName: "前埕入口迎賓長廊",
-    locationDesc: "自機器人待命基座穿過前埕石板路通往山門入口之導航走廊。",
-    pos: [-6, 0, 12],
+    locationName: "半月風水池西側石板導航迴廊",
+    locationDesc: "半月風水池畔石板引道，機器人自充電站出發、繞過清澈風水池自主巡航至門樓之導航動線。",
+    pos: [-14, 0, 32],
     actors: [
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "自主移動導航實體" },
-      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "地圖與全域狀態監控" }
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "自主路徑規劃與行進主體" },
+      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "全域場景地圖監控與遙測日誌" }
     ],
     preConditions: [
-      "導覽機器人處於待命或充電就緒狀態。",
-      "系統已載入大村武魁祠高精度 2D/3D SLAM 點雲地圖。"
+      "導覽機器人接收到派工任務，電池電量充足 (SOC > 30%)。",
+      "系統已加載武魁新厝三合院高精度 2D/3D SLAM 點雲地圖。"
     ],
     postConditions: [
-      "機器人安全動態避障，順利抵達武魁祠山門前迎賓停靠點。"
+      "機器人安全避開風水池駁岸與古厝矮牆，平順抵達獨立燕尾門樓前迎賓位。"
     ],
     eventFlow: [
-      { step: 1, text: "機器人接收迎賓派工指令，喚醒雙輪差速驅動馬達與光達 (LiDAR)。" },
-      { step: 2, text: "載入武魁祠場域地圖，規劃自主平滑路徑 (Global & Local Planner)。" },
-      { step: 3, text: "以 0.4 m/s 安全速度沿石板路巡航，光達即時動態避開庭院盆栽與立柱。" },
-      { step: 4, text: "精準抵達山門前之預設迎賓停靠錨點。" }
+      { step: 1, text: "機器人喚醒驅動輪馬達與 360° 旋轉光達 (LiDAR) 感測器。" },
+      { step: 2, text: "Nav2 路徑規劃器計算從西側側苑至山門門樓的最優避障路線。" },
+      { step: 3, text: "沿半月池畔石道行進，光達與超音波即時探測動態行人與庭院盆栽。" },
+      { step: 4, text: "精準減速停靠於『武魁』燕尾門樓前之迎賓定位錨點。" }
     ],
     sequenceSteps: [
-      { from: "中控伺服器", to: "導覽機器人", msg: "啟動迎賓導航指令", type: "sync" },
-      { from: "導覽機器人", to: "導覽機器人", msg: "喚醒驅動馬達與 360° 光達感測器", type: "internal" },
-      { from: "導覽機器人", to: "導覽機器人", msg: "SLAM 自主避障路徑規劃與移動", type: "internal" },
-      { from: "導覽機器人", to: "導覽機器人", msg: "到達山門迎賓點並回報狀態", type: "internal" }
+      { from: "中控伺服器", to: "導覽機器人", msg: "啟動迎賓導航至山門門樓", type: "sync" },
+      { from: "導覽機器人", to: "導覽機器人", msg: "光達點雲比對與 Nav2 自主路徑規劃", type: "internal" },
+      { from: "導覽機器人", to: "導覽機器人", msg: "動態避開風水池護欄與石道障礙物", type: "internal" },
+      { from: "導覽機器人", to: "中控伺服器", msg: "已就定位於山門迎賓錨點", type: "sync" }
     ],
-    techStack: ["ROS 2 Humble", "Nav2 路徑規劃", "Cartographer SLAM", "2D/3D LiDAR"],
-    speechText: "機器人已啟動 SLAM 自主導航，正前往武魁祠山門迎賓點。"
+    techStack: ["ROS 2 Humble", "Nav2 動態路徑規劃", "Cartographer SLAM", "360° 2D/3D LiDAR"],
+    speechText: "機器人啟動 SLAM 自主導航，正沿著半月風水池畔前往武魁門樓迎賓點。"
   },
   {
     id: "UC04",
@@ -116,33 +117,33 @@ const UC_DATA = [
     title: "互動迎賓問候",
     titleEn: "Interactive Greeting",
     category: "門口迎賓感知",
-    locationName: "武魁祠山門入口處",
-    locationDesc: "武魁祠山門下方，門楣上方高懸『武魁』匾額前之遊客初次接觸點。",
-    pos: [-2, 0, 9],
+    locationName: "武魁祠獨立燕尾門樓前迎賓廣場",
+    locationDesc: "武魁新厝單間硬山燕尾門樓前，門額高懸黑底金字『武魁』匾額，兩側為綠釉花磚透窗之古宅院門入口。",
+    pos: [0, 0, 24],
     actors: [
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "在地化互動導覽主體" },
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "接受問候與介面操作之訪客" }
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "進入門樓接受熱情迎賓之參訪者" }
     ],
     preConditions: [
-      "機器人到達山門迎賓定位點，且超音波/深度鏡頭偵測到遊客距離小於 1.5 公尺。"
+      "機器人到達燕尾門樓迎賓定位點，近距感測器偵測到遊客距離小於 1.5 公尺。"
     ],
     postConditions: [
-      "完成初次迎賓破冰，遊客確認開始導覽或自選導覽路線。"
+      "完成破冰互動問候，遊客於觸控螢幕點選進入武魁祠深度文化之旅。"
     ],
     eventFlow: [
-      { step: 1, text: "超音波與人體感測器確認遊客進入互動半徑 (< 1.5m)。" },
-      { step: 2, text: "機器人播放親切在地化問候語：「歡迎來到彰化大村武魁祠！」" },
-      { step: 3, text: "前置觸控螢幕亮起迎賓介面，展示武魁祠簡介與導覽路線選單。" },
-      { step: 4, text: "遊客點選「開始導覽」或進行語音確認，引導進入古蹟主體參訪。" }
+      { step: 1, text: "超音波感測器確認遊客穿過半月池石橋、接近燕尾門樓 (< 1.5m)。" },
+      { step: 2, text: "機器人前置迎賓螢幕點亮，播放熱情問候語：「歡迎來到彰化大村武魁祠！」" },
+      { step: 3, text: "螢幕展示咸豐武舉人歷史前導短片與導覽路線選單。" },
+      { step: 4, text: "遊客點選「開始導覽」，機器人引導穿過門樓進入開闊前埕。" }
     ],
     sequenceSteps: [
-      { from: "遊客", to: "導覽機器人", msg: "靠近至 1.5 公尺迎賓範圍", type: "action" },
-      { from: "導覽機器人", to: "遊客", msg: "語音問候：「歡迎光臨大村武魁祠！」", type: "speech" },
+      { from: "遊客", to: "導覽機器人", msg: "穿過半月池引道靠近門樓迎賓點", type: "action" },
+      { from: "導覽機器人", to: "遊客", msg: "語音問候：「歡迎來到彰化大村武魁祠！」", type: "speech" },
       { from: "導覽機器人", to: "遊客", msg: "觸控螢幕顯示導覽選單與路線選項", type: "display" },
-      { from: "遊客", to: "導覽機器人", msg: "點選「開始歷史文化導覽」", type: "action" }
+      { from: "遊客", to: "導覽機器人", msg: "點選「進入大村武魁新厝深度參訪」", type: "action" }
     ],
-    techStack: ["在地化語音合成 (TTS)", "人機觸控介面 (HMI)", "近接超音波感測器"],
-    speechText: "歡迎光臨彰化大村武魁祠！我是您的古蹟智慧導覽機器人，今天將帶您走進咸豐年間武舉人的傳奇歲月。"
+    techStack: ["在地化語音合成 (TTS)", "人機觸控介面 (HMI)", "超音波近接感測器", "門樓視覺對準"],
+    speechText: "歡迎光臨彰化縣定古蹟大村武魁祠！門額上的『武魁』匾額見證了咸豐九年賴氏兄弟高中武舉人的榮耀，請隨我進院參觀。"
   },
   {
     id: "UC05",
@@ -150,32 +151,32 @@ const UC_DATA = [
     title: "庭院空間導覽",
     titleEn: "Courtyard Spatial Tour",
     category: "武魁古蹟導覽",
-    locationName: "武魁祠前埕 / 旗杆石座文化廣場",
-    locationDesc: "三合院核心外埕，為昔日曬穀農事與咸豐九年兄弟高中武舉立旗祭祖之地，亦為『貢旗村』地名由來。",
-    pos: [0, 0, 4],
+    locationName: "開闊前埕中央 / 賴氏雙舉人旗杆石座文化區",
+    locationDesc: "武魁新厝核心外埕廣場，立有兩座賴步雲、賴登雲兄弟之清代舉人旗杆石座與高聳令旗，亦為『貢旗村』地名由來。",
+    pos: [0, 0, 10],
     actors: [
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "引導行進與歷史解說" },
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "隨行參訪並聆聽解說" }
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "建築佈局與貢旗文史解說員" },
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "佇立於開闊院埕欣賞全景之訪客" }
     ],
     preConditions: [
-      "遊客於山門完成迎賓問候，進入導覽模式。"
+      "遊客隨機器人穿過燕尾門樓，進入開闊三合院大前埕。"
     ],
     postConditions: [
-      "完成庭院建築格局與『貢旗村』地名文史解說，引導遊客轉往正身正廳。"
+      "完成三合院風水格局與『貢旗村』地名由來解說，引導遊客前往正身軒亭。"
     ],
     eventFlow: [
-      { step: 1, text: "機器人引領遊客移動至武魁新厝前埕中央空曠區。" },
-      { step: 2, text: "語音解說漳州平和移民一進一院三合院『ㄇ』字形風水坐向（坐北朝南避北風）。" },
-      { step: 3, text: "特寫說明前埕兩側之武舉人旗杆石座與貢旗村命名由來（咸豐九年立旗祭祖）。" },
-      { step: 4, text: "螢幕同步展示清代三合院全景空拍與古地圖對照。" }
+      { step: 1, text: "機器人引領遊客行進至前埕中央雙旗杆座之間。" },
+      { step: 2, text: "解說漳州平和移民傳統三合院『坐北朝南』避冬季東北季風之風水智慧。" },
+      { step: 3, text: "詳述咸豐九年兄弟中武舉後衣錦還鄉、立旗祭祖，聚落因而得名『貢旗村』之文史傳奇。" },
+      { step: 4, text: "螢幕同步顯示前埕昔日曬穀農事與祭祖慶典之歷史想像圖。" }
     ],
     sequenceSteps: [
-      { from: "導覽機器人", to: "遊客", msg: "引導遊客移動至前埕旗杆石區", type: "action" },
-      { from: "導覽機器人", to: "遊客", msg: "語音解說三合院格局與貢旗村由來", type: "speech" },
-      { from: "導覽機器人", to: "遊客", msg: "觸控螢幕播放前埕空間演變動畫", type: "display" }
+      { from: "導覽機器人", to: "遊客", msg: "引領抵達前埕雙旗杆石座中心觀景點", type: "action" },
+      { from: "導覽機器人", to: "遊客", msg: "語音解說三合院格局與貢旗村命名由來", type: "speech" },
+      { from: "導覽機器人", to: "遊客", msg: "螢幕展示清代立旗祭祖歷史復原繪圖", type: "display" }
     ],
-    techStack: ["定點導覽排程", "多媒體空拍圖層對照", "定點指向音響"],
-    speechText: "我們現在所在的是武魁祠的前埕。當年賴步雲與賴登雲兄弟高中武舉人，在此立旗祭祖、旌旗蔽空，這也是大村貢旗村名稱的由來。"
+    techStack: ["定點文史導航", "古蹟空間多媒體疊圖", "定向音場廣播系統"],
+    speechText: "我們眼前這兩座高聳的旗杆石座，是當年賴步雲與賴登雲兄弟高中武舉人所立。當年旌旗蔽天、光耀門楣，大村鄉貢旗村的地名正是由此誕生。"
   },
   {
     id: "UC06",
@@ -183,32 +184,32 @@ const UC_DATA = [
     title: "正廳歷史解說",
     titleEn: "Main Hall Historical Interpretation",
     category: "武魁古蹟導覽",
-    locationName: "武魁祠正身正廳（武魁匾與兄弟同榜匾下方）",
-    locationDesc: "三合院精神核心，高懸咸豐己未恩科『武魁』匾額與閩浙總督兼福建巡撫慶端贈『兄弟同榜』匾額。",
-    pos: [0, 0, -4],
+    locationName: "五開間正身正廳與懸山軒亭（兄弟同榜匾下方）",
+    locationDesc: "武魁祠精神核心，面寬五開間氣派正身，中央凹壽大門設三關六扇門，前方立有懸山馬背軒亭，高懸福建巡撫慶端贈『兄弟同榜』匾。",
+    pos: [0, 0, -2],
     actors: [
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "古蹟重點文物解說" },
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "欣賞古匾與木雕工藝" }
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "重點文物與工藝精闢解說主體" },
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "於軒亭前仰望兄弟同榜金匾之訪客" }
     ],
     preConditions: [
-      "完成前埕空間解說，機器人引導抵達正身正廳停靠點。"
+      "完成前埕空間解說，機器人精準停駐於軒亭拜亭前觀景定位點。"
     ],
     postConditions: [
-      "完成武魁匾、兄弟同榜匾歷史事蹟及漳州工藝細節深度解說。"
+      "深入理解全臺罕見『兄弟同榜』武舉事蹟，欣賞斗仔砌紅磚與雙燕尾脊工藝。"
     ],
     eventFlow: [
-      { step: 1, text: "機器人精準停靠於正廳中門前最佳視角觀賞位。" },
-      { step: 2, text: "語音深情講述賴步雲與賴登雲兄弟於清咸豐九年（1859年）同榜高中武舉人（第54、55名）的全臺傳奇。" },
-      { step: 3, text: "解說閩浙總督慶端贈『兄弟同榜』匾額之歷史背景與宗族榮耀。" },
-      { step: 4, text: "螢幕放大展示正身燕尾翹脊、斗栱架構與傳統彩繪木雕工藝特寫。" }
+      { step: 1, text: "機器人停靠於軒亭前方最佳仰角視線區。" },
+      { step: 2, text: "深情講述賴步雲與賴登雲於清咸豐九年（1859年）同榜中第（第54、55名）的全臺傳奇。" },
+      { step: 3, text: "解說閩浙總督兼福建巡撫慶端題贈『兄弟同榜』匾額之歷史意涵。" },
+      { step: 4, text: "螢幕高解析特寫正身雙硬山燕尾翹脊、凹壽門印與斗仔砌紅磚工法。" }
     ],
     sequenceSteps: [
-      { from: "導覽機器人", to: "導覽機器人", msg: "正身正廳微定位自主停靠", type: "internal" },
-      { from: "導覽機器人", to: "遊客", msg: "解說『兄弟同榜』與『武魁』匾歷史", type: "speech" },
-      { from: "導覽機器人", to: "遊客", msg: "螢幕高解析放大展示斗栱與燕尾脊工藝", type: "display" }
+      { from: "導覽機器人", to: "導覽機器人", msg: "軒亭前高精度自主微定位停靠", type: "internal" },
+      { from: "導覽機器人", to: "遊客", msg: "解說『兄弟同榜』咸豐恩科武舉人傳奇", type: "speech" },
+      { from: "導覽機器人", to: "遊客", msg: "螢幕放大展示斗栱、燕尾脊與門印工藝", type: "display" }
     ],
-    techStack: ["高精度室內微定位 (UWB / SLAM)", "數位典藏高解析檢視", "多國語言解說 (台/華/客/英)"],
-    speechText: "抬頭仰望正廳，這方『兄弟同榜』匾額是咸豐九年由福建巡撫慶端所贈。賴氏兄弟同科高中武舉人，是全台灣非常罕見的榮耀。"
+    techStack: ["高精度室內微定位 (UWB / SLAM)", "數位典藏超高解析檢視", "多語種歷史解說"],
+    speechText: "仰望正身大門上方，這方『兄弟同榜』匾額由福建巡撫慶端所贈。兄弟同科考中武舉人在全台灣史冊中極為罕見，是彰化大村至高無上的宗族榮耀。"
   },
   {
     id: "UC07",
@@ -216,31 +217,32 @@ const UC_DATA = [
     title: "廂房常民文化展示",
     titleEn: "Wing Rooms Folk Culture",
     category: "武魁古蹟導覽",
-    locationName: "武魁祠左右護龍（東廂與西廂房）",
-    locationDesc: "三合院護龍廂房，展示昔日漳州移民在大村的農村拓墾農具、日常生活器皿與武舉人習武石鎖。",
-    pos: [7, 0, 1],
+    locationName: "東護龍（左廂房）常民起居生活展示廊",
+    locationDesc: "武魁新厝東側護龍廂房，展示漳州移民農家拓墾農具、紅眠床古家具與武舉人練武專用石鎖大刀。",
+    pos: [18, 0, 2],
     actors: [
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "展示導覽與互動指引" },
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "觸控探索文物細節" }
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "常民生活與武術文物引導者" },
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "觸控探索古厝生活日常之民眾" }
     ],
     preConditions: [
-      "完成正廳解說，遊客隨機器人移動至護龍展示區。"
+      "完成正廳解說，機器人引領遊客前往東廂護龍廊道開闊平台。"
     ],
     postConditions: [
-      "遊客了解常民起居生活文化，加深對大村農業與宗族拓墾之歷史認知。"
+      "遊客充分體會清代大村拓墾農村日常與武舉人刻苦習武之歷史記憶。"
     ],
     eventFlow: [
-      { step: 1, text: "機器人帶領遊客穿過前埕石階，停駐於左護龍廂房展示區。" },
-      { step: 2, text: "語音解說早期大村農村農具、紅眠床、陶甕，以及武舉人練習臂力的石鎖與大刀器具。" },
-      { step: 3, text: "遊客觸控機器人螢幕，自由旋轉檢視常民文物 3D 模型與古今照片對照。" }
+      { step: 1, text: "機器人帶領遊客行進至東護龍廂房走廊前。" },
+      { step: 2, text: "語音解說漳州平和客家與閩南移民早期在大村開墾的農具與生活器物。" },
+      { step: 3, text: "特別介紹武舉人鍛鍊臂力與腕力所使用之『石鎖』、『大刀』歷史器物。" },
+      { step: 4, text: "遊客觸控螢幕旋轉檢視數位化 3D 石鎖模型與重量規格。" }
     ],
     sequenceSteps: [
-      { from: "導覽機器人", to: "遊客", msg: "帶領移動至護龍廂房展示通道", type: "action" },
-      { from: "導覽機器人", to: "遊客", msg: "語音解說漳州移民常民生活與習武器具", type: "speech" },
-      { from: "遊客", to: "導覽機器人", msg: "觸控螢幕 3D 檢視石鎖與傳統農具", type: "action" }
+      { from: "導覽機器人", to: "遊客", msg: "引導行進至東護龍廂房走廊", type: "action" },
+      { from: "導覽機器人", to: "遊客", msg: "解說常民農耕器物與武舉人習武石鎖", type: "speech" },
+      { from: "遊客", to: "導覽機器人", msg: "觸控螢幕進行 3D 文物 360 度互動旋轉", type: "action" }
     ],
-    techStack: ["3D 數位文物渲染", "窄道動態導航", "觸控互動式展覽系統"],
-    speechText: "這裡是護龍廂房，除了重現當年漳州移民的農家生活器皿外，還可以透過螢幕了解武舉人當年使用的石鎖與大刀訓練文物。"
+    techStack: ["WebGL 3D 數位文物渲染", "窄道動態導航避障", "文物典藏互動資料庫"],
+    speechText: "東護龍展區呈現了當年大村農村的純樸生活。螢幕上展示的是武舉人當年苦練力量的石鎖，重達數十斤，見證了考取武魁背後的堅毅毅力。"
   },
   {
     id: "UC08",
@@ -248,31 +250,32 @@ const UC_DATA = [
     title: "多媒體互動問答",
     titleEn: "Multimedia Interactive QA",
     category: "互動與閉環維運",
-    locationName: "右護龍多媒體互動體驗角",
-    locationDesc: "護龍寬敞廊道之多媒體觸控站，供訪客參與文史益智問答與數位集章。",
-    pos: [-7, 0, 1],
+    locationName: "西護龍（右廂房）多媒體益智闖關互動角",
+    locationDesc: "武魁新厝西側護龍過水廊前寬敞平台，設有觸控挑戰遊戲與數位紀念集章功能。",
+    pos: [-18, 0, 2],
     actors: [
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "出題並即時評判回饋" },
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "操作螢幕回答武魁文史問題" }
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "趣味出題與即時評分互動端" },
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "操作螢幕參與文史問答挑戰之民眾" }
     ],
     preConditions: [
-      "完成正廳與廂房導覽，抵達互動問答專屬停留區。"
+      "完成正廳與廂房文化導覽，抵達西廂互動專區。"
     ],
     postConditions: [
-      "遊客完成問答闖關，獲取武魁新厝數位紀念徽章或導覽認證。"
+      "遊客完成大村文史闖關測驗，獲得武魁祠數位榮譽紀念勳章。"
     ],
     eventFlow: [
-      { step: 1, text: "機器人觸控螢幕跳出『大村武魁祠文史挑戰』互動問答遊戲。" },
-      { step: 2, text: "遊客點選回答問題（如：賴家兄弟是咸豐幾年高中武舉？貢旗村由來為何？）。" },
-      { step: 3, text: "答對時播放音效與鼓勵語音，並發送手機 QR-Code 數位紀念圖章。" }
+      { step: 1, text: "機器人螢幕亮起『大村武魁文史達人挑戰』互動介面。" },
+      { step: 2, text: "遊客點選挑戰題目（如：兄弟同榜是哪兩位舉人？大村貢旗村名稱由來？）。" },
+      { step: 3, text: "答對時觸發歡呼音效與車載燈光慶祝特效。" },
+      { step: 4, text: "螢幕生成專屬紀念 QR-Code 供遊客手機下載數位集章。" }
     ],
     sequenceSteps: [
-      { from: "導覽機器人", to: "遊客", msg: "推播互動文史問答與趣味集章挑戰", type: "display" },
-      { from: "遊客", to: "導覽機器人", msg: "點選正確答案：「咸豐九年，兄弟同榜！」", type: "action" },
-      { from: "導覽機器人", to: "遊客", msg: "播放答對音效並產出數位紀念徽章", type: "display" }
+      { from: "導覽機器人", to: "遊客", msg: "推送互動文史問答闖關挑戰選單", type: "display" },
+      { from: "遊客", to: "導覽機器人", msg: "點選正確答案：「賴步雲、賴登雲兄弟！」", type: "action" },
+      { from: "導覽機器人", to: "遊客", msg: "播放獲勝音效並生成數位紀念徽章 QR Code", type: "display" }
     ],
-    techStack: ["互動式問答引擎", "QR Code 數位集章", "音效回饋系統"],
-    speechText: "恭喜您答對了！賴步雲與賴登雲兄弟確實在咸豐九年同榜高中武舉人，已為您記錄一枚『武魁榮譽徽章』！"
+    techStack: ["問答評分引擎", "動態 QR-Code 產生器", "車載互動音效燈效"],
+    speechText: "恭喜您全部答對！您已深刻了解大村武魁祠與貢旗村的輝煌文史，已為您頒發一枚『武魁榮譽數位勳章』！"
   },
   {
     id: "UC09",
@@ -280,32 +283,32 @@ const UC_DATA = [
     title: "導覽結束與歡送",
     titleEn: "Tour Conclusion & Farewell",
     category: "互動與閉環維運",
-    locationName: "武魁祠山門道別區 / 貢旗文創出口",
-    locationDesc: "古蹟出口處，機器人向遊客致謝並推薦大村在地特產（巨峰葡萄）及周邊景點。",
-    pos: [4, 0, 13],
+    locationName: "門樓東側大道 / 貢旗文創觀光出口區",
+    locationDesc: "獨立燕尾門樓東側出口石道，通往貢旗社區步道，可順遊周邊大村巨峰葡萄觀光果園與洋樓古蹟。",
+    pos: [14, 0, 24],
     actors: [
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "道別致詞與周邊觀光推廣" },
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "結束導覽行程並離開" }
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "道別致謝與大村觀光導購推薦" },
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "圓滿結束導覽行程之民眾" }
     ],
     preConditions: [
-      "完成所有展區導覽與問答體驗。"
+      "全區導覽與問答互動皆已順利完成。"
     ],
     postConditions: [
-      "遊客圓滿結束參觀行程，機器人回報中控伺服器任務完成。"
+      "遊客滿意離園，機器人回傳任務完成日誌並轉入待命巡查狀態。"
     ],
     eventFlow: [
-      { step: 1, text: "機器人引導遊客返回山門出口處。" },
-      { step: 2, text: "語音播放溫馨道別語：「感謝您造訪大村武魁祠，祝您今日旅程愉快！」" },
-      { step: 3, text: "螢幕推播大村周邊特色景點（大村葡萄觀光果園、雙心池塘）與滿意度問卷。" },
-      { step: 4, text: "機器人向中控伺服器發送導覽完成狀態訊號。" }
+      { step: 1, text: "機器人陪伴遊客移動至門樓旁出口步道。" },
+      { step: 2, text: "語音播放溫馨道別：「感謝您參訪大村武魁祠，願今日的古蹟之旅為您留下美好回憶！」" },
+      { step: 3, text: "螢幕推播大村在地觀光地圖：大村巨峰葡萄園採果、貢旗洋樓與雙心池塘景點。" },
+      { step: 4, text: "回報中控伺服器此趟導覽任務成功結束。" }
     ],
     sequenceSteps: [
-      { from: "導覽機器人", to: "遊客", msg: "引導至出口並播放溫馨道別語", type: "speech" },
-      { from: "導覽機器人", to: "遊客", msg: "螢幕推薦大村在地特產葡萄與周邊地圖", type: "display" },
-      { from: "導覽機器人", to: "中控伺服器", msg: "回報巡導任務完成，準備進入待命狀態", type: "sync" }
+      { from: "導覽機器人", to: "遊客", msg: "陪伴至出口步道並播放溫馨道別語", type: "speech" },
+      { from: "導覽機器人", to: "遊客", msg: "推播大村葡萄之鄉採果觀光休閒地圖", type: "display" },
+      { from: "導覽機器人", to: "中控伺服器", msg: "回傳 /wukui/mission/completed 完成訊號", type: "sync" }
     ],
-    techStack: ["滿意度問卷收集 API", "在地觀光資料庫串接", "中控狀態機同步"],
-    speechText: "感謝您的蒞臨！希望您喜歡今天的大村武魁祠文史之旅。大村鄉也是台灣著名的葡萄之鄉，歡迎您順道品嚐在地優質葡萄！"
+    techStack: ["大村在地觀光 API", "滿意度評分模組", "任務狀態機 (FSM)"],
+    speechText: "感謝您的蒞臨！彰化大村鄉是全台知名的巨峰葡萄之鄉，離開武魁祠後，不妨順道品嚐在地新鮮甜美的葡萄與參觀貢旗洋樓！"
   },
   {
     id: "UC10",
@@ -313,34 +316,34 @@ const UC_DATA = [
     title: "系統自動返航充電",
     titleEn: "Autonomous Docking & Charging",
     category: "互動與閉環維運",
-    locationName: "武魁祠西側廊道智慧充電樁基座",
-    locationDesc: "位於側廂隱蔽角落之專屬無線接觸式自主充電座，保障古蹟動線暢通。",
-    pos: [-11, 0, -2],
+    locationName: "西側外苑大村葡萄架旁智慧充電樁",
+    locationDesc: "位於西護龍側苑、綠意盎然的大村葡萄藤架旁之專屬無線接觸式自主充電基座。",
+    pos: [-24, 0, -6],
     actors: [
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "自主對準精準對接" },
-      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "電池狀態監控與排程" },
-      { name: "古蹟維運工作人員", role: "Staff", icon: "👨‍💻", desc: "後台異常告警備援" }
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "自主返航精準對接實體" },
+      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "電量監控與充電樁佔用調度" },
+      { name: "古蹟維運工作人員", role: "Staff", icon: "👨‍💻", desc: "後台能源狀態監控管理員" }
     ],
     preConditions: [
-      "行程結束處於閒置狀態，或電量偵測低於安全閾值 (20%)。"
+      "行程結束處於待命狀態，或電池管理系統 (BMS) 回報電量低於 25%。"
     ],
     postConditions: [
-      "機器人安全對準充電極板，進入補電與系統健檢休眠狀態。"
+      "機器人安全對準充電極板，進入自動補電與全車感測器健檢休眠狀態。"
     ],
     eventFlow: [
-      { step: 1, text: "機器人 BMS (電池管理系統) 檢測電量低於設定值或接收中控排程。" },
-      { step: 2, text: "啟動精確返航程序，避開庭院障礙物移動至充電站周邊。" },
-      { step: 3, text: "透過紅外線光學標記 (AprilTag) 或雷射對位，以公釐級精度倒車對接充電樁。" },
-      { step: 4, text: "啟動充電並上傳當日巡導里程與日誌至伺服器。" }
+      { step: 1, text: "機器人 BMS 偵測電量達充電閾值，觸發自主返航排程。" },
+      { step: 2, text: "沿規劃之安全最短路徑自主穿過西側過水門，避開古蹟遊客。" },
+      { step: 3, text: "在葡萄藤架旁充電樁前，利用 AprilTag 視覺標籤與雷射對位實現毫米級精準對接。" },
+      { step: 4, text: "接觸極板通電，上傳當日巡導數據與感測器健康日誌。" }
     ],
     sequenceSteps: [
-      { from: "導覽機器人", to: "中控伺服器", msg: "回報低電量警示 (SOC < 20%)", type: "sync" },
-      { from: "導覽機器人", to: "導覽機器人", msg: "規劃最短回航路徑返回西側充電區", type: "internal" },
-      { from: "導覽機器人", to: "導覽機器人", msg: "AprilTag 視覺輔助精準對齊接觸極板", type: "internal" },
-      { from: "導覽機器人", to: "中控伺服器", msg: "對接完成，進入充電與離線待命狀態", type: "sync" }
+      { from: "導覽機器人", to: "中控伺服器", msg: "電量過低警示 (SOC < 25%) 請求返航充電", type: "sync" },
+      { from: "導覽機器人", to: "導覽機器人", msg: "自主路徑規劃前往西側外苑充電樁", type: "internal" },
+      { from: "導覽機器人", to: "導覽機器人", msg: "AprilTag 視覺伺服對齊與極板精準對接", type: "internal" },
+      { from: "導覽機器人", to: "中控伺服器", msg: "對接成功，啟動補電與系統健檢", type: "sync" }
     ],
-    techStack: ["BMS 電池管理系統", "AprilTag 視覺伺服對接", "紅外線精準對位", "自動充電管理"],
-    speechText: "電量即將用盡，正在自主返回西廂充電樁進行補電與系統校準。"
+    techStack: ["BMS 電池管理系統", "AprilTag 視覺伺服對接", "紅外線精準對位", "自動充電管理樁"],
+    speechText: "電量即將用盡，正在自主前往西側葡萄架旁的智慧充電樁進行補電與感測器校準。"
   },
   {
     id: "UC11",
@@ -348,34 +351,34 @@ const UC_DATA = [
     title: "表情辨識主動關懷",
     titleEn: "Facial Expression Proactive Assistance",
     category: "智慧進階感知",
-    locationName: "正廳廊道深度解說巡視區",
-    locationDesc: "正身與左右護龍交界處，遊客凝視文物駐留較久之區域。",
-    pos: [3, 0, -2],
+    locationName: "正廳軒亭與東廂過水廊巡視區",
+    locationDesc: "正身與東廂交接處之通廊平台，遊客常在此凝視古厝木雕或碑文，為 AI 情緒感知深度巡視點。",
+    pos: [10, 0, -6],
     actors: [
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "露出思索或困惑表情之訪客" },
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "主動靠近並釋出善意解說" },
-      { name: "機器人視覺鏡頭", role: "Robot Vision Camera", icon: "📷", desc: "搭載人臉情緒分析 AI 模型" }
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "駐留於木雕前露出思索或疑惑表情之訪客" },
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "具備同理心主動上前解惑之智慧體" },
+      { name: "機器人視覺鏡頭", role: "Robot Vision Camera", icon: "📷", desc: "搭載人臉表情識別 (FER) 之深度相機" }
     ],
     preConditions: [
-      "機器人處於場域巡導或駐留解說狀態，RGB-D 深度相機正常工作。"
+      "機器人處於場域巡邏狀態，車載 RGB-D 深度相機正常捕獲訪客臉部。"
     ],
     postConditions: [
-      "機器人溫和主動上前提供深層文史解說，成功化解遊客疑惑。"
+      "機器人溫和上前提供深層文史解讀，化解遊客疑惑並提升參訪滿意度。"
     ],
     eventFlow: [
-      { step: 1, text: "遊客在正身木雕或碑文前停下，臉部出現皺眉、思索或疑惑特徵。" },
-      { step: 2, text: "機器人內建鏡頭透過情緒辨識 AI 模型 (FER) 分析遊客表情持續逾 3 秒。" },
-      { step: 3, text: "機器人自主微調路徑，溫和轉向遊客並以低速平緩靠近至 1.2 公尺。" },
-      { step: 4, text: "語音主動詢問：「我看您對這段歷史很感興趣，需要為您介紹武魁匾的由來嗎？」" }
+      { step: 1, text: "遊客在正身木雕或斗栱前駐足，臉部呈現皺眉、思索或疑惑表情超過 3 秒。" },
+      { step: 2, text: "車載鏡頭透過情緒辨識 AI 模型 (FER) 判定訪客有解說需求。" },
+      { step: 3, text: "機器人主動調整航向，以 0.2 m/s 極緩慢速度靠近至安全禮貌距離 (1.2m)。" },
+      { step: 4, text: "溫和主動詢問：「我看您對這個木雕非常專注，需要為您講述上面的典故嗎？」" }
     ],
     sequenceSteps: [
-      { from: "遊客", to: "機器人視覺鏡頭", msg: "駐留並露出疑惑/思考表情 (> 3秒)", type: "action" },
-      { from: "機器人視覺鏡頭", to: "導覽機器人", msg: "觸發表情分析情緒事件 (Confused/Interested)", type: "sync" },
-      { from: "導覽機器人", to: "導覽機器人", msg: "微調航向，安全減速靠近遊客", type: "internal" },
-      { from: "導覽機器人", to: "遊客", msg: "主動詢問：「需要為您進一步解說這個展區嗎？」", type: "speech" }
+      { from: "遊客", to: "機器人視覺鏡頭", msg: "駐足並顯露疑惑/思索表情 (> 3秒)", type: "action" },
+      { from: "機器人視覺鏡頭", to: "導覽機器人", msg: "觸發情緒分析事件 (Confused/Interested)", type: "sync" },
+      { from: "導覽機器人", to: "導覽機器人", msg: "行為樹決策：自主微調路徑溫和靠攏", type: "internal" },
+      { from: "導覽機器人", to: "遊客", msg: "主動問候：「需要為您解說正身木雕的寓意嗎？」", type: "speech" }
     ],
-    techStack: ["Facial Emotion Recognition (FER)", "MediaPipe FaceMesh", "主動互動決策樹 (Behavior Tree)"],
-    speechText: "我看您對正廳的建築細節非常專注，需要我為您補充這座三合院木雕斗栱的工藝小故事嗎？"
+    techStack: ["Facial Emotion Recognition (FER)", "MediaPipe FaceMesh", "行為樹決策系統 (Behavior Tree)"],
+    speechText: "我看您對正身樑柱上的精細木雕非常專注，需要我為您補充這座三合院傳統漳州工藝的寓意小故事嗎？"
   },
   {
     id: "UC12",
@@ -383,34 +386,34 @@ const UC_DATA = [
     title: "手勢辨識請求協助",
     titleEn: "Gesture Recognition & Call for Help",
     category: "智慧進階感知",
-    locationName: "武魁祠前埕中央開闊互動區",
-    locationDesc: "武魁祠開闊庭院，遊客可從遠處視野直接目視機器人並揮手招呼。",
-    pos: [-3, 0, 2],
+    locationName: "開闊前埕南側手勢呼叫互動區",
+    locationDesc: "武魁祠開闊前埕南側，距離正身與護龍皆有開闊視角，遊客可遠距離向機器人招手呼叫協助。",
+    pos: [-8, 0, 12],
     actors: [
-      { name: "遊客", role: "Visitor", icon: "👤", desc: "揮手或舉手請求服務之訪客" },
+      { name: "遊客", role: "Visitor", icon: "👤", desc: "在前埕開闊處向機器人招手呼叫之訪客" },
       { name: "機器人視覺鏡頭", role: "Robot Vision Camera", icon: "📷", desc: "動態骨架手勢追蹤 AI" },
-      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "響應招喚即刻前來服務" }
+      { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "響應召喚即時前來服務之機器人" }
     ],
     preConditions: [
-      "機器人處於前埕視野開闊範圍內，視覺鏡頭無遮蔽。"
+      "機器人處於前埕視野無遮蔽範圍內，巡導攝影機正常運作。"
     ],
     postConditions: [
-      "機器人精準響應手勢指令，抵達遊客面前提供所需導覽或協助選項。"
+      "機器人精準識別動態招手手勢，中斷常態任務導航至遊客身旁提供所需服務。"
     ],
     eventFlow: [
-      { step: 1, text: "遊客在前埕向導覽機器人連續做出「揮手 (Waving)」或「舉手 (Hand-raising)」動作。" },
-      { step: 2, text: "機器人廣角鏡頭結合人體骨架關鍵點辨識 (Pose Estimation) 判定為求助指令。" },
-      { step: 3, text: "機器人立即暫停當前巡邏或空閒行程，車載燈光閃爍回應並發出確認音效。" },
-      { step: 4, text: "機器人轉向遊客方位，自主導航前往其身旁並語音回應：「我來了！請問有什麼需要幫忙的嗎？」" }
+      { step: 1, text: "遊客在前埕遠端向導覽機器人做出連續『揮手 (Waving)』或『舉手』動作。" },
+      { step: 2, text: "機器人全景相機透過 MediaPipe 人體骨架關鍵點追蹤，判定為即時呼叫指令。" },
+      { step: 3, text: "機器人車載 LED 面板閃爍確認光效，並發出「收到召喚」輕快提示音。" },
+      { step: 4, text: "機器人轉向遊客方位，自主導航抵達遊客面前：「我聽到您的呼喚了！請問需要什麼協助？」" }
     ],
     sequenceSteps: [
-      { from: "遊客", to: "機器人視覺鏡頭", msg: "在可視範圍內連續揮手召喚", type: "action" },
-      { from: "機器人視覺鏡頭", to: "導覽機器人", msg: "AI 辨識動態手勢「Waving Gestures」", type: "sync" },
-      { from: "導覽機器人", to: "導覽機器人", msg: "暫停閒置，鎖定遊客座標並重新規劃路徑", type: "internal" },
-      { from: "導覽機器人", to: "遊客", msg: "移動至身旁語音回應：「我聽到您的呼叫了，請問需要什麼協助？」", type: "speech" }
+      { from: "遊客", to: "機器人視覺鏡頭", msg: "在前埕開闊處連續揮手招呼", type: "action" },
+      { from: "機器人視覺鏡頭", to: "導覽機器人", msg: "AI 辨識手勢「Hand Waving Detected」", type: "sync" },
+      { from: "導覽機器人", to: "導覽機器人", msg: "任務優先級提升，鎖定遊客座標自主前往", type: "internal" },
+      { from: "導覽機器人", to: "遊客", msg: "抵達身旁回應：「我來到您身旁了，請問有何需要協助？」", type: "speech" }
     ],
-    techStack: ["MediaPipe Hands / Holistic", "動態手勢時序分類 (LSTM/GRU)", "動態任務優先級切換"],
-    speechText: "我看到您的招手召喚了！請問需要為您重新導航、尋找洗手間，還是重播剛才的歷史解說呢？"
+    techStack: ["MediaPipe Hands / Holistic", "動態手勢時序分類 (LSTM/GRU)", "任務優先級動態排程"],
+    speechText: "我看到您的揮手招喚了！請問需要為您重新導航路線、尋找洗手間，還是重播剛才的正廳文史解說呢？"
   }
 ];
 
@@ -418,4 +421,3 @@ const UC_DATA = [
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { UC_DATA };
 }
-
