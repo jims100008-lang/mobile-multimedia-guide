@@ -15,7 +15,7 @@ sequenceDiagram
     autonumber
     actor Visitor as 遊客 (Visitor)
     participant Cam as 大門口智慧鏡頭<br/>(Entrance Camera)
-    participant Server as 中央控制伺服器<br/>(Server)
+    participant Pi as 樹莓派通訊節點<br/>(Raspberry Pi)
     participant Robot as 導覽機器人<br/>(Robot)
 
     %% UC01: 偵測訪客
@@ -29,11 +29,11 @@ sequenceDiagram
     %% UC02: 發送迎賓通知
     rect rgb(245, 245, 220)
         note over Cam, Robot: UC02: 發送迎賓通知
-        Cam->>Server: 觸發事件：偵測到新訪客 (發送座標/時間)
+        Cam->>Pi: 觸發事件：偵測到新訪客 (發送座標/時間)
         deactivate Cam
-        activate Server
-        Server->>Robot: 推播迎賓請求與目標座標 (API / MQTT)
-        deactivate Server
+        activate Pi
+        Pi->>Robot: 推播迎賓請求與目標座標 (MQTT)
+        deactivate Pi
     end
 
     %% UC03: 執行迎賓導航
@@ -73,12 +73,12 @@ sequenceDiagram
 
 ### UC02：發送迎賓通知 (Send Greeting Notification)
 
-* **參與者**：智慧門口鏡頭、中央控制伺服器 / 機器人
+* **參與者**：智慧門口鏡頭、樹莓派、導覽機器人
 * **前置條件**：UC01 成功偵測到訪客。
 * **主要事件流**：
 
 1. 門口鏡頭將辨識結果封裝為資料封包。
-2. 透過區域網路無線通訊（Wi-Fi / MQTT 協議）將「訪客到達」訊號發送至中控伺服器或直接廣播給導覽機器人。
+2. 透過區域網路無線通訊（Wi-Fi / MQTT 協議）將「訪客到達」訊號發送至樹莓派，再由樹莓派通知導覽機器人。
 3. 系統過濾短時間內的重複觸發（避免頻繁干擾）。
 
 

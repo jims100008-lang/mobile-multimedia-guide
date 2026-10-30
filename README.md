@@ -10,7 +10,7 @@
 | :--- | :--- | :--- |
 | **遊客** | Visitor | 參訪民眾，進入園區並與導覽機器人進行語音及觸控螢幕互動。 |
 | **大門口智慧鏡頭** | Entrance Camera | 具備邊緣運算（Edge AI）能力，透過 YOLO 物件偵測技術即時辨識進入大門的訪客。 |
-| **中央控制伺服器** | Central Server | 負責中繼協調與事件排程，接收感測訊號並透過 MQTT / REST API 派送導航迎賓任務。 |
+| **樹莓派通訊節點** | Raspberry Pi Gateway | 負責門口事件接收、MQTT中繼、簡易排程及樹莓派與Jetson之間的狀態同步。 |
 | **導覽機器人** | Guide Robot | 搭載光達（LiDAR）、超音波感測器與 SLAM 自主導航系統，具備多媒體螢幕與在地化語音互動功能。 |
 
 ---
@@ -31,7 +31,7 @@ graph LR
 
 ### 2. UC02：發送迎賓通知 (Send Greeting Notification)
 * **前置條件**：UC01 成功偵測到訪客。
-* **流程**：鏡頭封裝事件資料，經由 Wi-Fi 與 MQTT / API 協議送往中控伺服器，系統自動過濾短時間內的重複訊號並派發迎賓指令。
+* **流程**：鏡頭封裝事件資料，經由 Wi-Fi 與 MQTT 協議送往現場樹莓派節點，系統過濾短時間內的重複訊號並通知導覽機器人執行迎賓。
 * **結果**：導覽機器人接收到迎賓請求與目標大門座標。
 
 ### 3. UC03：執行迎賓導航 (Execute Greeting Navigation)
@@ -62,14 +62,14 @@ graph TB
 
     Visitor["👤 遊客<br/>(Visitor)"]
     Camera["📷 智慧門口鏡頭<br/>(Entrance Camera)"]
-    Server["💻 中央控制伺服器<br/>(Server)"]
+    Pi["🍓 樹莓派通訊節點<br/>(Raspberry Pi)"]
     Robot["🤖 導覽機器人<br/>(Robot)"]
 
     Visitor --- UC01
     Camera --- UC01
     Camera --- UC02
-    Server --- UC02
-    Server --- UC03
+    Pi --- UC02
+    Pi --- UC03
     Robot --- UC03
     Robot --- UC04
     Visitor --- UC04
@@ -86,7 +86,7 @@ sequenceDiagram
     autonumber
     actor Visitor as 遊客 (Visitor)
     participant Cam as 大門口智慧鏡頭<br/>(Entrance Camera)
-    participant Server as 中央控制伺服器<br/>(Server)
+    participant Pi as 樹莓派通訊節點<br/>(Raspberry Pi)
     participant Robot as 導覽機器人<br/>(Robot)
 
     rect rgb(240, 248, 255)
@@ -98,11 +98,11 @@ sequenceDiagram
 
     rect rgb(245, 245, 220)
         note over Cam, Robot: UC02: 發送迎賓通知
-        Cam->>Server: 觸發事件：偵測到新訪客 (發送座標/時間)
+        Cam->>Pi: 觸發事件：偵測到新訪客 (發送座標/時間)
         deactivate Cam
-        activate Server
-        Server->>Robot: 推播迎賓請求與目標座標 (API / MQTT)
-        deactivate Server
+        activate Pi
+        Pi->>Robot: 推播迎賓請求與目標座標 (MQTT)
+        deactivate Pi
     end
 
     rect rgb(240, 255, 240)
@@ -167,5 +167,5 @@ sequenceDiagram
 
 * **電腦視覺 & 邊緣運算**：YOLO / OpenCV 人體辨識與追蹤
 * **機器人自主移動**：ROS / ROS 2、SLAM 建圖導航、光達（LiDAR）與超音波避障
-* **通訊協定與中控**：MQTT Broker、RESTful API、WebSocket
+* **通訊協定與現場通訊**：樹莓派 MQTT Broker、Jetson ROS 2 Bridge、局域網
 * **人機互動 (HMI)**：在地化語音合成 (TTS)、觸控式導覽介面

@@ -14,15 +14,15 @@ graph TB
     %% 參與者定義
     Visitor["👤 遊客<br/>(Visitor)"]
     Camera["📷 智慧門口鏡頭<br/>(Entrance Camera)"]
-    Server["💻 中央控制伺服器<br/>(Server)"]
+    Pi["🍓 樹莓派通訊節點<br/>(Raspberry Pi)"]
     Robot["🤖 導覽機器人<br/>(Robot)"]
 
     %% 參與者與用例之關聯 (Association)
     Visitor --- UC01
     Camera --- UC01
     Camera --- UC02
-    Server --- UC02
-    Server --- UC03
+    Pi --- UC02
+    Pi --- UC03
     Robot --- UC03
     Robot --- UC04
     Visitor --- UC04

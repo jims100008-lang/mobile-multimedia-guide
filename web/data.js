@@ -36,7 +36,7 @@ const UC_DATA = [
     sequenceSteps: [
       { from: "遊客", to: "大門智慧鏡頭", msg: "踏入貢旗一巷外圍感測區", type: "action" },
       { from: "大門智慧鏡頭", to: "大門智慧鏡頭", msg: "YOLOv8 即時邊緣人體特徵分析", type: "internal" },
-      { from: "大門智慧鏡頭", to: "中控伺服器", msg: "發布 /wukui/visitor/arrival 入場事件", type: "async" }
+      { from: "大門智慧鏡頭", to: "樹莓派節點", msg: "發布 /wukui/visitor/arrival 入場事件", type: "async" }
     ],
     techStack: ["YOLOv8 Edge AI", "OpenCV 影像處理", "邊緣運算模組", "RTSP 串流協定"],
     speechText: "大門口智慧鏡頭已成功辨識訪客踏入大村武魁祠迎賓引道，自動啟動導覽迎賓機制。"
@@ -48,33 +48,33 @@ const UC_DATA = [
     titleEn: "Send Greeting Notification",
     category: "門口迎賓感知",
     locationName: "迎賓引道東側物聯網通訊亭",
-    locationDesc: "座落於迎賓引道東側、風水池外圓的開闊石板通道旁之中控伺服器節點與 MQTT 物聯網閘道通訊亭。",
+    locationDesc: "座落於迎賓引道東側、風水池外圓的開闊石板通道旁之樹莓派 MQTT 通訊與中繼節點。",
     pos: [20, 0, 48],
     actors: [
       { name: "大門口智慧鏡頭", role: "Entrance Camera", icon: "📷", desc: "事件辨識發送端" },
-      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "事件中繼、排程與狀態協調核心" },
+      { name: "樹莓派通訊節點", role: "Raspberry Pi Gateway", icon: "🍓", desc: "門口事件中繼、MQTT與簡易任務協調" },
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "迎賓任務接收與導航實體" }
     ],
     preConditions: [
       "UC01 成功偵測到新進訪客事件。",
-      "武魁祠中控伺服器 MQTT Broker 連線服務正常運作中。"
+      "武魁祠樹莓派 MQTT Broker 連線服務正常運作中。"
     ],
     postConditions: [
-      "中控伺服器過濾重複觸發，並向 AMR 機器人發送迎賓派工請求與山門門樓坐標。"
+      "樹莓派節點過濾重複觸發，並向 AMR 機器人發送迎賓派工請求與山門門樓坐標。"
     ],
     eventFlow: [
       { step: 1, text: "外門鏡頭將人體特徵封裝為標準 MQTT JSON 資料封包。" },
-      { step: 2, text: "通訊閘道以低延遲無線網路發送至中控通訊樞紐。" },
-      { step: 3, text: "中控伺服器啟動 Debounce 防抖機制，避免短時間重複派遣。" },
+      { step: 2, text: "門口設備透過低延遲無線網路發送至樹莓派通訊節點。" },
+      { step: 3, text: "樹莓派啟動 Debounce 防抖機制，避免短時間重複派遣。" },
       { step: 4, text: "派工排程引擎指派 AMR 前往獨立燕尾門樓迎賓停靠點。" }
     ],
     sequenceSteps: [
-      { from: "外門智慧鏡頭", to: "中控伺服器", msg: "MQTT 推送新訪客座標與時間戳", type: "sync" },
-      { from: "中控伺服器", to: "中控伺服器", msg: "Debounce 防重複觸發與任務佇列排程", type: "internal" },
-      { from: "中控伺服器", to: "導覽機器人", msg: "派送迎賓指令與山門門樓迎賓座標", type: "async" }
+      { from: "外門智慧鏡頭", to: "樹莓派節點", msg: "MQTT 推送新訪客座標與時間戳", type: "sync" },
+      { from: "樹莓派節點", to: "樹莓派節點", msg: "Debounce 防重複觸發與任務佇列排程", type: "internal" },
+      { from: "樹莓派節點", to: "導覽機器人", msg: "派送迎賓指令與山門門樓迎賓座標", type: "async" }
     ],
     techStack: ["MQTT Broker", "RESTful API", "Event Debounce", "JSON Schema 封包"],
-    speechText: "中央控制伺服器已完成任務排程，派遣 AMR 導覽機器人前往燕尾門樓迎賓點。"
+    speechText: "樹莓派通訊節點已完成訪客事件中繼，派遣 AMR 導覽機器人前往燕尾門樓迎賓點。"
   },
   {
     id: "UC03",
@@ -87,7 +87,7 @@ const UC_DATA = [
     pos: [-20, 0, 44],
     actors: [
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "自主路徑規劃與行進主體" },
-      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "全域場景地圖監控與遙測日誌" }
+      { name: "樹莓派通訊節點", role: "Raspberry Pi Gateway", icon: "🍓", desc: "任務中繼與機器人狀態紀錄" }
     ],
     preConditions: [
       "導覽機器人接收到派工任務，電池電量充足 (SOC > 30%)。",
@@ -103,10 +103,10 @@ const UC_DATA = [
       { step: 4, text: "精準減速停靠於『武魁』燕尾門樓前之迎賓定位錨點。" }
     ],
     sequenceSteps: [
-      { from: "中控伺服器", to: "導覽機器人", msg: "啟動迎賓導航至山門門樓", type: "sync" },
+      { from: "樹莓派節點", to: "導覽機器人", msg: "啟動迎賓導航至山門門樓", type: "sync" },
       { from: "導覽機器人", to: "導覽機器人", msg: "光達點雲比對與 Nav2 自主路徑規劃", type: "internal" },
       { from: "導覽機器人", to: "導覽機器人", msg: "動態避開風水池護欄與石道障礙物", type: "internal" },
-      { from: "導覽機器人", to: "中控伺服器", msg: "已就定位於山門迎賓錨點", type: "sync" }
+      { from: "導覽機器人", to: "樹莓派節點", msg: "已就定位於山門迎賓錨點", type: "sync" }
     ],
     techStack: ["ROS 2 Humble", "Nav2 動態路徑規劃", "Cartographer SLAM", "360° 2D/3D LiDAR"],
     speechText: "機器人啟動 SLAM 自主導航，正沿著半月風水池畔前往武魁門樓迎賓點。"
@@ -300,12 +300,12 @@ const UC_DATA = [
       { step: 1, text: "機器人陪伴遊客移動至門樓旁出口大道。" },
       { step: 2, text: "語音播放溫馨道別：「感謝您參訪大村武魁祠，願今日的古蹟之旅為您留下美好回憶！」" },
       { step: 3, text: "螢幕推播大村在地觀光地圖：大村巨峰葡萄園採果、貢旗洋樓與雙心池塘景點。" },
-      { step: 4, text: "回報中控伺服器此趟導覽任務成功結束。" }
+      { step: 4, text: "回報樹莓派通訊節點此趟導覽任務成功結束。" }
     ],
     sequenceSteps: [
       { from: "導覽機器人", to: "遊客", msg: "陪伴至出口大道並播放溫馨道別語", type: "speech" },
       { from: "導覽機器人", to: "遊客", msg: "推播大村葡萄之鄉採果觀光休閒地圖", type: "display" },
-      { from: "導覽機器人", to: "中控伺服器", msg: "回傳 /wukui/mission/completed 完成訊號", type: "sync" }
+      { from: "導覽機器人", to: "樹莓派節點", msg: "回傳 /wukui/mission/completed 完成訊號", type: "sync" }
     ],
     techStack: ["大村在地觀光 API", "滿意度評分模組", "任務狀態機 (FSM)"],
     speechText: "感謝您的蒞臨！彰化大村鄉是全台知名的巨峰葡萄之鄉，離開武魁祠後，不妨順道品嚐在地新鮮甜美的葡萄與參觀貢旗洋樓！"
@@ -321,7 +321,7 @@ const UC_DATA = [
     pos: [-24, 0, -5],
     actors: [
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "自主返航精準對接實體" },
-      { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "電量監控與充電樁佔用調度" },
+      { name: "樹莓派通訊節點", role: "Raspberry Pi Gateway", icon: "🍓", desc: "電量狀態與充電事件中繼" },
       { name: "古蹟維運工作人員", role: "Staff", icon: "👨‍💻", desc: "後台能源狀態監控管理員" }
     ],
     preConditions: [
@@ -337,10 +337,10 @@ const UC_DATA = [
       { step: 4, text: "接觸極板通電，上傳當日巡導數據與感測器健康日誌。" }
     ],
     sequenceSteps: [
-      { from: "導覽機器人", to: "中控伺服器", msg: "電量過低警示 (SOC < 25%) 請求返航充電", type: "sync" },
+      { from: "導覽機器人", to: "樹莓派節點", msg: "電量過低警示 (SOC < 25%) 請求返航充電", type: "sync" },
       { from: "導覽機器人", to: "導覽機器人", msg: "自主路徑規劃前往西側外苑充電樁", type: "internal" },
       { from: "導覽機器人", to: "導覽機器人", msg: "AprilTag 視覺伺服對齊與極板精準對接", type: "internal" },
-      { from: "導覽機器人", to: "中控伺服器", msg: "對接成功，啟動補電與系統健檢", type: "sync" }
+      { from: "導覽機器人", to: "樹莓派節點", msg: "對接成功，啟動補電與系統健檢", type: "sync" }
     ],
     techStack: ["BMS 電池管理系統", "AprilTag 視覺伺服對接", "紅外線精準對位", "自動充電管理樁"],
     speechText: "電量即將用盡，正在自主前往西側葡萄架旁的智慧充電樁進行補電與感測器校準。"

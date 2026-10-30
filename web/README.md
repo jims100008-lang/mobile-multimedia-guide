@@ -26,7 +26,7 @@
 | 用例編號 | 用例名稱 | 英文名稱 | 武魁祠對應場域與文化機能 | 核心技術與感測器 |
 | :--- | :--- | :--- | :--- | :--- |
 | **UC01** | **偵測訪客** | Detect Visitor | 武魁祠外門 / 貢旗巷口迎賓區 | YOLOv8 Edge AI、人體辨識 |
-| **UC02** | **發送迎賓通知** | Send Greeting Notification | 古蹟物聯網中控通訊樞紐 | MQTT Broker、Debounce 防抖 |
+| **UC02** | **發送迎賓通知** | Send Greeting Notification | 門口樹莓派通訊節點 | MQTT Broker、Debounce 防抖 |
 | **UC03** | **執行迎賓導航** | Execute Greeting Navigation | 前埕入口迎賓長廊 | ROS 2、Cartographer SLAM、LiDAR |
 | **UC04** | **互動迎賓問候** | Interactive Greeting | 武魁祠山門入口處（武魁匾下方） | HMI 觸控螢幕、在地化語音合成 (TTS) |
 | **UC05** | **庭院空間導覽** | Courtyard Spatial Tour | 前埕 / 舉人旗杆石座文化廣場 | 貢旗文史多媒體對照、空拍演變 |
@@ -56,4 +56,3 @@ node server.js
 
 ### 方式三：直接開啟 HTML 檔案
 直接使用 Chrome 或 Edge 瀏覽器開啟 `web/index.html` 檔案即可！
-

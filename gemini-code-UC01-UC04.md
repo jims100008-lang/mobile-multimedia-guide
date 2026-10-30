@@ -8,7 +8,7 @@ sequenceDiagram
     autonumber
     actor Visitor as 遊客 (Visitor)
     participant Cam as 大門口智慧鏡頭<br/>(Entrance Camera)
-    participant Server as 中央控制伺服器<br/>(Server)
+    participant Pi as 樹莓派通訊節點<br/>(Raspberry Pi)
     participant Robot as 導覽機器人<br/>(Robot)
 
     %% UC01: 偵測訪客
@@ -22,11 +22,11 @@ sequenceDiagram
     %% UC02: 發送迎賓通知
     rect rgb(245, 245, 220)
         note over Cam, Robot: UC02: 發送迎賓通知
-        Cam->>Server: 觸發事件：偵測到新訪客 (發送座標/時間)
+        Cam->>Pi: 觸發事件：偵測到新訪客 (發送座標/時間)
         deactivate Cam
-        activate Server
-        Server->>Robot: 推播迎賓請求與目標座標 (API / MQTT)
-        deactivate Server
+        activate Pi
+        Pi->>Robot: 推播迎賓請求與目標座標 (MQTT)
+        deactivate Pi
     end
 
     %% UC03: 執行迎賓導航
