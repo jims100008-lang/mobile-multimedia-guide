@@ -47,9 +47,9 @@ const UC_DATA = [
     title: "發送迎賓通知",
     titleEn: "Send Greeting Notification",
     category: "門口迎賓感知",
-    locationName: "半月池東南岸物聯網通訊亭",
-    locationDesc: "座落於半月風水池東南側開闊石道旁之中控伺服器節點與 MQTT 物聯網閘道通訊亭。",
-    pos: [14, 0, 50],
+    locationName: "迎賓引道東側物聯網通訊亭",
+    locationDesc: "座落於迎賓引道東側、風水池外圓的開闊石板通道旁之中控伺服器節點與 MQTT 物聯網閘道通訊亭。",
+    pos: [20, 0, 48],
     actors: [
       { name: "大門口智慧鏡頭", role: "Entrance Camera", icon: "📷", desc: "事件辨識發送端" },
       { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "事件中繼、排程與狀態協調核心" },
@@ -83,8 +83,8 @@ const UC_DATA = [
     titleEn: "Execute Greeting Navigation",
     category: "門口迎賓感知",
     locationName: "半月風水池西岸石板迴廊",
-    locationDesc: "半月池西側石板環池步道，機器人自西側外苑充電站出發、繞過清澈風水池巡航至門樓之專屬導航動線。",
-    pos: [-18, 0, 36],
+    locationDesc: "半月池西側石板環池步道，機器人沿西側引道巡航至門樓的專屬導航動線，不進入池面或建物範圍。",
+    pos: [-20, 0, 44],
     actors: [
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "自主路徑規劃與行進主體" },
       { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "全域場景地圖監控與遙測日誌" }
@@ -118,8 +118,8 @@ const UC_DATA = [
     titleEn: "Interactive Greeting",
     category: "門口迎賓感知",
     locationName: "武魁燕尾門樓正前方迎賓石坪",
-    locationDesc: "武魁新厝單間硬山燕尾門樓正面外埕，正對黑底金字『武魁』大匾，為遊客步入古厝的第一破冰接觸點。",
-    pos: [0, 0, 28],
+    locationDesc: "武魁新厝單間硬山燕尾門樓正面外埕中央石道，正對黑底金字『武魁』大匾，為遊客步入古厝的第一破冰接觸點。",
+    pos: [0, 0, 30],
     actors: [
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "在地化互動導覽主體" },
       { name: "遊客", role: "Visitor", icon: "👤", desc: "進入門樓接受熱情迎賓之參訪者" }
@@ -186,7 +186,7 @@ const UC_DATA = [
     category: "武魁古蹟導覽",
     locationName: "正身軒亭拜亭正前觀景石坪",
     locationDesc: "正身中軸線正前方、軒亭拜亭外之觀禮平台，穿透四柱拜亭直接仰望凹壽大門上方之福建巡撫慶端贈『兄弟同榜』金匾與雙層硬山燕尾脊。",
-    pos: [0, 0, -3],
+    pos: [0, 0, -2],
     actors: [
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "重點文物與工藝精闢解說主體" },
       { name: "遊客", role: "Visitor", icon: "👤", desc: "於軒亭前仰望兄弟同榜金匾之訪客" }
@@ -284,8 +284,8 @@ const UC_DATA = [
     titleEn: "Tour Conclusion & Farewell",
     category: "互動與閉環維運",
     locationName: "門樓東側出口大道 / 觀光接駁點",
-    locationDesc: "獨立燕尾門樓東側石板外廊（院牆外東南通道），遊客準備步出古蹟園區，機器人在此致謝並指引大村葡萄果園與洋樓動線。",
-    pos: [16, 0, 28],
+    locationDesc: "獨立燕尾門樓東側石板外廊與前埕交界的開闊道別點，遊客準備步出古蹟園區，機器人在此致謝並指引參觀動線。",
+    pos: [18, 0, 30],
     actors: [
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "道別致謝與大村觀光導購推薦" },
       { name: "遊客", role: "Visitor", icon: "👤", desc: "圓滿結束導覽行程之民眾" }
@@ -317,8 +317,8 @@ const UC_DATA = [
     titleEn: "Autonomous Docking & Charging",
     category: "互動與閉環維運",
     locationName: "西側外苑大村巨峰葡萄棚架充電站",
-    locationDesc: "西護龍外側開闊花園中、葡萄藤架下的專屬無線接觸式自主充電基座，既安全遠離遊客主動線，又彰顯大村葡萄風土。",
-    pos: [-30, 0, -5],
+    locationDesc: "西護龍外側與葡萄藤架東側交界的開闊停靠區，為專屬無線接觸式自主充電基座，安全遠離遊客主動線。",
+    pos: [-24, 0, -5],
     actors: [
       { name: "導覽機器人", role: "AMR Guide Robot", icon: "🤖", desc: "自主返航精準對接實體" },
       { name: "中央控制伺服器", role: "Central Server", icon: "💻", desc: "電量監控與充電樁佔用調度" },

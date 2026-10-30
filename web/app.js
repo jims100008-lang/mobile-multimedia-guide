@@ -20,8 +20,8 @@ let raycaster, mouse;
 let proceduralTextures = {};
 
 // 最佳全景視角 (完整收納宏偉五開間正身、左右護龍、門樓與半月池)
-const DEFAULT_CAM_POS = { x: 0, y: 58, z: 76 };
-const DEFAULT_LOOK_AT = { x: 0, y: 3, z: 10 };
+const DEFAULT_CAM_POS = { x: 0, y: 52, z: 68 };
+const DEFAULT_LOOK_AT = { x: 0, y: 4, z: 8 };
 
 // 初始化
 window.addEventListener("DOMContentLoaded", () => {
@@ -468,6 +468,7 @@ function buildRealisticWukuiAncestralHall() {
   // ==========================================
   const mainHall = new THREE.Group();
   mainHall.position.set(0, 0, -17);
+  mainHall.scale.set(1.12, 1.12, 1.12);
 
   // 花崗岩基座
   const podium = new THREE.Mesh(new THREE.BoxGeometry(40, 0.8, 11), graniteMat);
@@ -560,6 +561,7 @@ function buildRealisticWukuiAncestralHall() {
   // ==========================================
   const xuanTing = new THREE.Group();
   xuanTing.position.set(0, 0, -9.5);
+  xuanTing.scale.set(1.12, 1.12, 1.12);
 
   const xtPodium = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.55, 7.5), graniteMat);
   xtPodium.position.set(0, 0.28, 0);
@@ -603,6 +605,7 @@ function buildRealisticWukuiAncestralHall() {
   // 東護龍 (左廂 - UC07 常民展示)
   const eastWing = new THREE.Group();
   eastWing.position.set(21, 0, 2);
+  eastWing.scale.set(1.12, 1.12, 1.12);
 
   const eBody = new THREE.Mesh(new THREE.BoxGeometry(wingWidth, 5.2, wingLength), brickMat);
   eBody.position.set(0, 2.6, 0);
@@ -630,6 +633,7 @@ function buildRealisticWukuiAncestralHall() {
   // 西護龍 (右廂 - UC08 多媒體問答)
   const westWing = new THREE.Group();
   westWing.position.set(-21, 0, 2);
+  westWing.scale.set(1.12, 1.12, 1.12);
 
   const wBody = new THREE.Mesh(new THREE.BoxGeometry(wingWidth, 5.2, wingLength), brickMat);
   wBody.position.set(0, 2.6, 0);
@@ -659,6 +663,7 @@ function buildRealisticWukuiAncestralHall() {
   // ==========================================
   const gateHouse = new THREE.Group();
   gateHouse.position.set(0, 0, 24);
+  gateHouse.scale.set(1.12, 1.12, 1.12);
 
   const gateWall = new THREE.Mesh(new THREE.BoxGeometry(10.5, 5.5, 3.6), brickMat);
   gateWall.position.set(0, 2.75, 0);
@@ -856,13 +861,13 @@ function buildDacunRuralLandscape(parent) {
   const foliageMat = new THREE.MeshStandardMaterial({ color: 0x19452b, roughness: 0.8 });
 
   treePositions.forEach(([tx, tz]) => {
-    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.75, 5.0, 8), trunkMat);
-    trunk.position.set(tx, 2.5, tz);
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.62, 4.2, 8), trunkMat);
+    trunk.position.set(tx, 2.1, tz);
     trunk.castShadow = true;
     parent.add(trunk);
 
-    const foliage = new THREE.Mesh(new THREE.DodecahedronGeometry(3.6, 1), foliageMat);
-    foliage.position.set(tx, 6.5, tz);
+    const foliage = new THREE.Mesh(new THREE.DodecahedronGeometry(3.0, 1), foliageMat);
+    foliage.position.set(tx, 5.8, tz);
     foliage.castShadow = true;
     parent.add(foliage);
   });

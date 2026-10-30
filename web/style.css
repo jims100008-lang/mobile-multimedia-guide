@@ -553,6 +553,11 @@ body {
   line-height: 1.45;
 }
 
+.loc-box {
+  padding-left: 10px;
+  border-left: 2px solid rgba(251, 191, 36, 0.55);
+}
+
 /* 角色 */
 .actors-grid {
   display: flex;
@@ -585,6 +590,20 @@ body {
   font-size: 0.84rem;
   color: #f8fafc;
   display: block;
+}
+
+.actor-chip > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.actor-chip > div > div {
+  margin-top: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 6px;
+  line-height: 1.35;
 }
 
 .actor-chip .role-tag {
@@ -650,6 +669,10 @@ body {
   color: #e2e8f0;
   line-height: 1.45;
   flex: 1;
+}
+
+.event-step-item:nth-child(odd) .step-text {
+  background: rgba(56, 189, 248, 0.035);
 }
 
 /* 雙欄條件卡片 */
@@ -935,4 +958,3 @@ body {
     padding: 10px 12px;
   }
 }
-
