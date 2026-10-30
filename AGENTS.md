@@ -84,6 +84,22 @@ http://localhost:3000
 
 ## 提交前檢查
 
+- Git 有關操作前，先執行完整的遠端與工作區檢查：
+  ```powershell
+  git fetch --prune origin
+  git status
+  git status -sb
+  git rev-list --left-right --count HEAD...origin/<branch>
+  git --no-pager log -3 --oneline --decorate HEAD
+  git --no-pager log -3 --oneline --decorate origin/<branch>
+  ```
+- 任何提交、拉取或推送前，先確認當前分支、本機提交位置、遠端提交位置與未提交變更。
+- 拉取時優先使用 `git pull --ff-only origin <branch>`，避免意外產生合併提交或覆蓋團隊提交。
+- 發生衝突、分支分歧或工作區有未知變更時，先完整列出差異並詢問使用者，不可使用 `git reset --hard`、`git clean`、強制覆蓋或 `git push --force`。
+- 提交前先檢查 `git diff` 與 `git diff --cached`；提交時不得包含未被本次需求直接使用的變更。
+- 提交後立即執行 `git push origin <branch>`，再重新 fetch 並確認本機 `HEAD` 與 `origin/<branch>` 完全一致。
+- 團隊版本管理發生落後、超前或分歧時，禁止假設遠端未更新；必須以實際 fetch 結果為準。
+
 - 檔案只包含本次需求直接相關的變更。
 - 沒有把 debug console、暫存截圖、個人路徑或測試資料提交進版本控制。
 - 啟動伺服器後已驗證載入與主要互動。
